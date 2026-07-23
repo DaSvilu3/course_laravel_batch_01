@@ -39,7 +39,7 @@
                 <x-input-label for="password" :value="__('admin.password')" />
                 <x-text-input id="password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
                 @if ($user->exists)
-                    <p class="mt-1 text-xs text-gray-500">{{ __('admin.password_hint') }}</p>
+                    <p class="mt-1 text-xs text-ink-500 dark:text-ink-400">{{ __('admin.password_hint') }}</p>
                 @endif
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
@@ -53,12 +53,13 @@
 
         <label class="flex items-center gap-2">
             <input type="hidden" name="is_active" value="0">
-            <input type="checkbox" name="is_active" value="1" class="rounded border-gray-300 text-brand-600"
+            <input type="checkbox" name="is_active" value="1"
+                   class="rounded border-ink-300 text-brand-600 focus:ring-brand-500 dark:border-ink-600 dark:bg-ink-900"
                    @checked(old('is_active', $user->is_active ?? true))>
-            <span class="text-sm text-gray-700">{{ __('common.active') }}</span>
+            <span class="text-sm text-ink-700 dark:text-ink-300">{{ __('common.active') }}</span>
         </label>
 
-        <div class="flex gap-3 border-t border-gray-100 pt-4">
+        <div class="flex gap-3 border-t border-ink-100 pt-4 dark:border-ink-800">
             <button type="submit" class="btn-primary">{{ __('common.save') }}</button>
             <a href="{{ route('admin.users.index') }}" class="btn-secondary">{{ __('common.cancel') }}</a>
         </div>

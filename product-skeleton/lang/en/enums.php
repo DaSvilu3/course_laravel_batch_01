@@ -37,4 +37,17 @@ return [
         'cancelled' => 'Cancelled',
     ],
 
+    'billing_interval' => [
+        'month' => 'Monthly',
+        'year' => 'Yearly',
+    ],
+
+    'subscription_status' => [
+        'pending' => 'Pending',
+        'trialing' => 'Trial',
+        'active' => 'Active',
+        'expired' => 'Expired',
+        'canceled' => 'Canceled',
+    ],
+
 ];

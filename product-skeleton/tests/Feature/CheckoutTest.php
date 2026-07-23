@@ -98,7 +98,7 @@ class CheckoutTest extends TestCase
         // …and the signed callback verifies it with the gateway.
         $this->actingAs($user)
             ->get($this->signedCallback('checkout.success', $payment))
-            ->assertRedirect(route('orders.show', $payment->order_id));
+            ->assertRedirect(route('orders.show', $payment->order));
 
         $this->assertSame(PaymentStatus::Paid, $payment->fresh()->status);
         $this->assertSame(OrderStatus::Paid, $payment->order->fresh()->status);

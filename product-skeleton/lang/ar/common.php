@@ -36,4 +36,8 @@ return [
     'none' => '—',
     'confirm_delete' => 'هل أنت متأكد من الحذف؟',
     'no_results' => 'لا توجد نتائج.',
+
+    'welcome_back' => 'مرحبًا بعودتك، :name',
+    'toggle_theme' => 'التبديل بين الوضع الفاتح والداكن',
+    'all_systems_operational' => 'جميع الأنظمة تعمل',
 ];

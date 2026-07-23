@@ -32,7 +32,7 @@
         <div>
             <x-input-label for="slug" :value="__('admin.slug')" />
             <x-text-input id="slug" name="slug" class="mt-1 block w-full" :value="old('slug', $category->slug)" />
-            <p class="mt-1 text-xs text-gray-500">{{ __('admin.slug_hint') }}</p>
+            <p class="mt-1 text-xs text-ink-500 dark:text-ink-400">{{ __('admin.slug_hint') }}</p>
             <x-input-error :messages="$errors->get('slug')" class="mt-2" />
         </div>
 
@@ -55,13 +55,13 @@
             </div>
             <label class="flex items-end gap-2 pb-2">
                 <input type="hidden" name="is_active" value="0">
-                <input type="checkbox" name="is_active" value="1" class="rounded border-gray-300 text-brand-600"
+                <input type="checkbox" name="is_active" value="1" class="rounded border-ink-300 text-brand-600 focus:ring-brand-500 dark:border-ink-700 dark:bg-ink-800"
                        @checked(old('is_active', $category->is_active ?? true))>
-                <span class="text-sm text-gray-700">{{ __('common.active') }}</span>
+                <span class="text-sm text-ink-700 dark:text-ink-300">{{ __('common.active') }}</span>
             </label>
         </div>
 
-        <div class="flex gap-3 border-t border-gray-100 pt-4">
+        <div class="flex gap-3 border-t border-ink-200 pt-4 dark:border-ink-800">
             <button type="submit" class="btn-primary">{{ __('common.save') }}</button>
             <a href="{{ route('admin.categories.index') }}" class="btn-secondary">{{ __('common.cancel') }}</a>
         </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureSubscribed;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\SetLocale;
@@ -21,9 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureUserIsActive::class,
         ]);
 
-        // ->middleware('role:admin')
+        // ->middleware('role:admin') / ->middleware('subscribed:pro')
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+            'subscribed' => EnsureSubscribed::class,
         ]);
 
         // Payment providers cannot send our CSRF token.

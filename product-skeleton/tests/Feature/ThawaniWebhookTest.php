@@ -17,8 +17,7 @@ class ThawaniWebhookTest extends TestCase
     {
         $order = Order::factory()->create(['total' => 25_000]);
 
-        return Payment::create(array_merge([
-            'order_id' => $order->id,
+        return $order->payments()->create(array_merge([
             'user_id' => $order->user_id,
             'gateway' => 'fake',
             'status' => PaymentStatus::Pending,

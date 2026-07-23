@@ -10,6 +10,8 @@ return [
     'orders' => 'الطلبات',
     'payments' => 'المدفوعات',
     'bookings' => 'الحجوزات',
+    'plans' => 'الباقات',
+    'subscriptions' => 'الاشتراكات',
 
     'saved' => 'تم الحفظ بنجاح.',
     'deleted' => 'تم الحذف بنجاح.',
@@ -75,5 +77,16 @@ return [
     'customer_details' => 'بيانات العميل',
     'back_to_list' => 'رجوع للقائمة',
     'orders_count' => 'الطلبات',
+
+    'new_plan' => 'باقة جديدة',
+    'edit_plan' => 'تعديل باقة',
+    'interval' => 'دورة الفوترة',
+    'trial_days' => 'أيام التجربة',
+    'plan_features' => 'المميزات / الحدود',
+    'plan_features_hint' => 'سطر لكل "مفتاح: قيمة"، مثل max_projects: 10 أو api_access: true. استخدم -1 لغير محدود.',
+    'subscribers' => 'المشتركون',
+    'started_at' => 'تاريخ البدء',
+    'ends_at' => 'ينتهي / يتجدد',
+    'cancel_subscription' => 'إلغاء فوري',
 
 ];

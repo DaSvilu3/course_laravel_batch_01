@@ -2,50 +2,52 @@
 
 namespace App\Services;
 
+use App\Contracts\Payable;
 use App\Contracts\PaymentGateway;
-use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
-use App\Models\Order;
 use App\Models\Payment;
 use App\Payments\Exceptions\PaymentException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
+/**
+ * Drives any Payable (an Order or a Subscription) through the gateway. It knows
+ * nothing about what it is charging for — fulfilment is delegated back to the
+ * Payable in settle().
+ */
 class CheckoutService
 {
-    public function __construct(
-        private readonly PaymentGateway $gateway,
-        private readonly OrderService $orders,
-    ) {}
+    public function __construct(private readonly PaymentGateway $gateway) {}
 
     /**
      * Create a payment row, open a session at the gateway and return the
      * payment (its checkout_url is where the customer must be sent).
      */
-    public function start(Order $order): Payment
+    public function start(Payable $payable): Payment
     {
-        if ($order->isPaid()) {
-            throw new PaymentException('This order has already been paid.');
+        if ($payable->isSettled()) {
+            throw new PaymentException('This item has already been paid for.');
         }
 
+        $total = $payable->paymentTotal();
         $minimum = (int) config('payments.minimum_amount', 100);
 
-        if ($order->total < $minimum) {
-            throw new PaymentException("Order total is below the gateway minimum of {$minimum} baisa.");
+        if ($total < $minimum) {
+            throw new PaymentException("Amount is below the gateway minimum of {$minimum} baisa.");
         }
 
-        $payment = $order->payments()->create([
-            'user_id' => $order->user_id,
+        $payment = $payable->payments()->create([
+            'user_id' => $payable->paymentOwner()->id,
             'gateway' => $this->gateway->name(),
             'status' => PaymentStatus::Pending,
-            'amount' => $order->total,
-            'currency' => $order->currency,
+            'amount' => $total,
+            'currency' => $payable->paymentCurrency(),
         ]);
 
         // Signed URLs so the callbacks cannot be forged or replayed with a
         // different payment id. The status is still verified with the gateway.
         $session = $this->gateway->createSession(
-            $order->load('items'),
+            $payable,
             URL::signedRoute('checkout.success', ['payment' => $payment->id]),
             URL::signedRoute('checkout.cancel', ['payment' => $payment->id]),
         );
@@ -56,7 +58,7 @@ class CheckoutService
             'payload' => ['session' => $session->raw],
         ]);
 
-        $order->update(['status' => OrderStatus::AwaitingPayment]);
+        $payable->handleCheckoutStarted($payment);
 
         return $payment;
     }
@@ -101,17 +103,15 @@ class CheckoutService
             $payment->paid_at = now();
             $payment->save();
 
-            $this->orders->markAsPaid($payment->order);
+            $payment->payable->handlePaymentPaid($payment);
 
             return $payment->fresh();
         }
 
         $payment->save();
 
-        // Cancelled or failed: put the order back so the customer can retry.
-        if (in_array($result->status, [PaymentStatus::Cancelled, PaymentStatus::Failed], true)
-            && ! $payment->order->isPaid()) {
-            $payment->order->update(['status' => OrderStatus::Pending]);
+        if (in_array($result->status, [PaymentStatus::Cancelled, PaymentStatus::Failed], true)) {
+            $payment->payable->handlePaymentFailed($payment);
         }
 
         return $payment;

@@ -1,18 +1,18 @@
 <x-guest-layout>
-    <h1 class="text-lg font-bold text-gray-900">{{ __('payments.fake_title') }}</h1>
+    <h1 class="text-lg font-bold text-ink-900 dark:text-white">{{ __('payments.fake_title') }}</h1>
 
-    <p class="mt-2 rounded-lg bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
+    <p class="mt-2 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800 dark:bg-amber-900/25 dark:text-amber-200">
         {{ __('payments.fake_notice') }}
     </p>
 
     <dl class="mt-6 space-y-2 text-sm">
         <div class="flex justify-between">
-            <dt class="text-gray-500">{{ __('shop.order_number') }}</dt>
-            <dd class="font-mono">{{ $payment->order->number }}</dd>
+            <dt class="text-ink-500 dark:text-ink-400">{{ __('shop.order_number') }}</dt>
+            <dd class="font-mono text-ink-800 dark:text-ink-200">{{ $payment->order->number }}</dd>
         </div>
         <div class="flex justify-between">
-            <dt class="text-gray-500">{{ __('payments.amount_due') }}</dt>
-            <dd class="font-bold text-brand-700">{{ $payment->formattedAmount() }}</dd>
+            <dt class="text-ink-500 dark:text-ink-400">{{ __('payments.amount_due') }}</dt>
+            <dd class="font-bold text-brand-600 dark:text-brand-400">{{ $payment->formattedAmount() }}</dd>
         </div>
     </dl>
 

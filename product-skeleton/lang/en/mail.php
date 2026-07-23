@@ -6,4 +6,7 @@ return [
     'order_paid_line' => 'We received your payment for order :number (:total).',
     'view_order' => 'View order',
     'thanks' => 'Thank you for your business!',
+
+    'subscription_expiring_subject' => 'Your subscription is about to end',
+    'subscription_expiring_line' => 'Your :plan subscription ends on :date. Renew to keep your access.',
 ];

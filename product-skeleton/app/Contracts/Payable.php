@@ -46,6 +46,9 @@ interface Payable
     /** Has this already been paid for? Keeps checkout idempotent. */
     public function isSettled(): bool;
 
+    /** A checkout session has just been opened (e.g. mark "awaiting payment"). */
+    public function handleCheckoutStarted(Payment $payment): void;
+
     /** Fulfilment once money is received (activate, ship, grant access…). */
     public function handlePaymentPaid(Payment $payment): void;
 

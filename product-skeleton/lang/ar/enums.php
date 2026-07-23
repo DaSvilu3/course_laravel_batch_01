@@ -37,4 +37,17 @@ return [
         'cancelled' => 'ملغي',
     ],
 
+    'billing_interval' => [
+        'month' => 'شهري',
+        'year' => 'سنوي',
+    ],
+
+    'subscription_status' => [
+        'pending' => 'قيد الانتظار',
+        'trialing' => 'فترة تجريبية',
+        'active' => 'نشط',
+        'expired' => 'منتهي',
+        'canceled' => 'ملغي',
+    ],
+
 ];

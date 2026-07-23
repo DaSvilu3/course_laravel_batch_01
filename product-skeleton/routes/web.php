@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Billing;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Payments\FakeGatewayController;
@@ -25,6 +26,9 @@ Route::get('services/{service}', [Shop\ServiceController::class, 'show'])->name(
 
 Route::get('products', [Shop\ProductController::class, 'index'])->name('products.index');
 Route::get('products/{product}', [Shop\ProductController::class, 'show'])->name('products.show');
+
+// Public SaaS pricing page.
+Route::get('plans', [Shop\PlanController::class, 'index'])->name('plans.index');
 
 // The cart lives in the session, so guests can fill it before logging in.
 Route::controller(Shop\CartController::class)->prefix('cart')->name('cart.')->group(function () {
@@ -58,6 +62,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('bookings', [Shop\BookingController::class, 'index'])->name('bookings.index');
     Route::patch('bookings/{booking}', [Shop\BookingController::class, 'update'])->name('bookings.update');
+
+    // Billing / SaaS subscriptions.
+    Route::get('billing', [Billing\SubscriptionController::class, 'index'])->name('billing.index');
+    Route::post('billing/subscribe/{plan}', [Billing\SubscriptionController::class, 'store'])->name('billing.subscribe');
+    Route::post('billing/{subscription}/renew', [Billing\SubscriptionController::class, 'renew'])->name('billing.renew');
+    Route::post('billing/{subscription}/cancel', [Billing\SubscriptionController::class, 'cancel'])->name('billing.cancel');
+
+    // Example of a subscriber-only area. Protect any route the same way:
+    //   ->middleware('subscribed')        any active plan
+    //   ->middleware('subscribed:pro')    a specific plan
+    Route::get('members', fn () => view('members'))->middleware('subscribed')->name('members');
 });
 
 /*
@@ -101,6 +116,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('categories', Admin\CategoryController::class)->except('show');
     Route::resource('services', Admin\ServiceController::class)->except('show');
     Route::resource('products', Admin\ProductController::class)->except('show');
+    Route::resource('plans', Admin\PlanController::class)->except('show');
+
+    Route::get('subscriptions', [Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/{subscription}/cancel', [Admin\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
 
     Route::get('orders', [Admin\OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');

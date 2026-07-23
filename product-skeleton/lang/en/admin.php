@@ -10,6 +10,8 @@ return [
     'orders' => 'Orders',
     'payments' => 'Payments',
     'bookings' => 'Bookings',
+    'plans' => 'Plans',
+    'subscriptions' => 'Subscriptions',
 
     'saved' => 'Saved successfully.',
     'deleted' => 'Deleted successfully.',
@@ -75,5 +77,16 @@ return [
     'customer_details' => 'Customer details',
     'back_to_list' => 'Back to list',
     'orders_count' => 'Orders',
+
+    'new_plan' => 'New plan',
+    'edit_plan' => 'Edit plan',
+    'interval' => 'Billing interval',
+    'trial_days' => 'Trial days',
+    'plan_features' => 'Features / limits',
+    'plan_features_hint' => 'One "key: value" per line, e.g. max_projects: 10 or api_access: true. Use -1 for unlimited.',
+    'subscribers' => 'Subscribers',
+    'started_at' => 'Started',
+    'ends_at' => 'Ends / renews',
+    'cancel_subscription' => 'Cancel now',
 
 ];

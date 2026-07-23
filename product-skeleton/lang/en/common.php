@@ -36,4 +36,8 @@ return [
     'none' => '—',
     'confirm_delete' => 'Are you sure you want to delete this?',
     'no_results' => 'Nothing found.',
+
+    'welcome_back' => 'Welcome back, :name',
+    'toggle_theme' => 'Toggle light and dark mode',
+    'all_systems_operational' => 'All systems operational',
 ];

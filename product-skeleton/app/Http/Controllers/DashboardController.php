@@ -16,6 +16,7 @@ class DashboardController extends Controller
             'ordersCount' => $user->orders()->count(),
             'spent' => (int) $user->orders()->paid()->sum('total'),
             'bookings' => $user->bookings()->with('service')->upcoming()->take(5)->get(),
+            'subscription' => $user->activeSubscription(),
         ]);
     }
 }

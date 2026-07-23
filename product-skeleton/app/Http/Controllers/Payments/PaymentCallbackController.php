@@ -23,7 +23,7 @@ class PaymentCallbackController extends Controller
     {
         $payment = $this->settle($payment);
 
-        return redirect()->route('orders.show', $payment->order_id)->with(
+        return redirect()->to($payment->payable->paymentReturnUrl())->with(
             'status',
             $payment->isPaid() ? __('shop.payment_success') : __('shop.payment_pending'),
         );
@@ -31,9 +31,9 @@ class PaymentCallbackController extends Controller
 
     public function cancel(Payment $payment): RedirectResponse
     {
-        $this->settle($payment);
+        $payment = $this->settle($payment);
 
-        return redirect()->route('orders.show', $payment->order_id)
+        return redirect()->to($payment->payable->paymentReturnUrl())
             ->with('status', __('shop.payment_cancelled'));
     }
 

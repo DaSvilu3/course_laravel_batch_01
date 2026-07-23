@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Service;
+use App\Models\Subscription;
 use App\Payments\PaymentManager;
 use App\Policies\BookingPolicy;
 use App\Policies\OrderPolicy;
@@ -37,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'service' => Service::class,
             'product' => Product::class,
+            'order' => Order::class,
+            'subscription' => Subscription::class,
         ]);
 
         Gate::policy(Order::class, OrderPolicy::class);

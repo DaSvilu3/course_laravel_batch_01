@@ -1,4 +1,6 @@
 <x-guest-layout>
+    <h1 class="mb-6 text-2xl font-bold text-ink-900 dark:text-white">{{ __('Reset Password') }}</h1>
+
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
 

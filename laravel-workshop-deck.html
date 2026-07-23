@@ -1,0 +1,1425 @@
+<title>ورشة بناء منتج رقمي مع قاعدة بيانات</title>
+
+<style>
+  :root{
+    --paper:#EDEEF1; --surface:#FFFFFF; --surface-2:#F5F6F8;
+    --ink:#15171C; --ink-2:#454B57; --muted:#6C7382;
+    --rule:#D6D9DF; --rule-strong:#B7BCC6;
+    --steel:#2A5A6B; --steel-soft:#E1ECEF;
+    --ok:#2A7A62; --warn:#9C6A0C; --over:#BE3319;
+    --ok-soft:#E1F0EA; --warn-soft:#F6EBD6; --over-soft:#F8E3DE;
+    --shadow:0 1px 0 rgba(20,24,32,.04), 0 8px 24px -18px rgba(20,24,32,.5);
+
+    --arabic: ui-sans-serif, system-ui, "SF Arabic", "Segoe UI", "Noto Sans Arabic", "Dubai", Tahoma, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#0E1014; --surface:#161A21; --surface-2:#1C212A;
+      --ink:#E9EBEF; --ink-2:#B6BCC7; --muted:#838B99;
+      --rule:#262B35; --rule-strong:#3A414D;
+      --steel:#79B8C9; --steel-soft:#15282F;
+      --ok:#54C4A0; --warn:#DFA841; --over:#F26A4B;
+      --ok-soft:#12291F; --warn-soft:#2B2210; --over-soft:#2E1712;
+      --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0E1014; --surface:#161A21; --surface-2:#1C212A;
+    --ink:#E9EBEF; --ink-2:#B6BCC7; --muted:#838B99;
+    --rule:#262B35; --rule-strong:#3A414D;
+    --steel:#79B8C9; --steel-soft:#15282F;
+    --ok:#54C4A0; --warn:#DFA841; --over:#F26A4B;
+    --ok-soft:#12291F; --warn-soft:#2B2210; --over-soft:#2E1712;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+  }
+  :root[data-theme="light"]{
+    --paper:#EDEEF1; --surface:#FFFFFF; --surface-2:#F5F6F8;
+    --ink:#15171C; --ink-2:#454B57; --muted:#6C7382;
+    --rule:#D6D9DF; --rule-strong:#B7BCC6;
+    --steel:#2A5A6B; --steel-soft:#E1ECEF;
+    --ok:#2A7A62; --warn:#9C6A0C; --over:#BE3319;
+    --ok-soft:#E1F0EA; --warn-soft:#F6EBD6; --over-soft:#F8E3DE;
+    --shadow:0 1px 0 rgba(20,24,32,.04), 0 8px 24px -18px rgba(20,24,32,.5);
+  }
+
+  *{ box-sizing:border-box; }
+
+  .app{
+    direction:rtl;
+    font-family:var(--arabic);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- timecode bar ---------- */
+  .bar{
+    display:flex; align-items:stretch; gap:0;
+    border-bottom:1px solid var(--rule);
+    background:var(--surface);
+    position:sticky; top:0; z-index:40;
+  }
+  .bar-slot{
+    display:flex; flex-direction:column; justify-content:center; gap:.28rem;
+    padding:.7rem clamp(.8rem,2vw,1.4rem);
+  }
+  .bar-slot + .bar-slot{ border-inline-start:1px solid var(--rule); }
+  .bar-now{ flex:1; min-width:0; }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted);
+  }
+  .bar-title{
+    font-size:clamp(.95rem,1.7vw,1.15rem); font-weight:650;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .tc{ font-family:var(--mono); font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate; }
+
+  .clock{
+    font-family:var(--mono); font-variant-numeric:tabular-nums;
+    direction:ltr; unicode-bidi:isolate;
+    font-size:clamp(1.9rem,4.6vw,3rem); font-weight:600; line-height:1;
+    letter-spacing:-.02em;
+    color:var(--ok);
+    transition:color .3s ease;
+  }
+  .app[data-state="warn"] .clock{ color:var(--warn); }
+  .app[data-state="over"] .clock{ color:var(--over); }
+  .app[data-state="idle"] .clock{ color:var(--muted); }
+  .app[data-state="over"] .bar-clock{ background:var(--over-soft); }
+  .app[data-state="warn"] .bar-clock{ background:var(--warn-soft); }
+  .bar-clock{ transition:background .4s ease; align-items:flex-start; }
+
+  .clock-label{ display:flex; align-items:center; gap:.5rem; }
+  .pulse{
+    width:.5rem; height:.5rem; border-radius:50%; background:var(--ok);
+    box-shadow:0 0 0 0 currentColor;
+  }
+  .app[data-running="true"] .pulse{ animation:beat 2s ease-in-out infinite; }
+  .app[data-state="warn"] .pulse{ background:var(--warn); }
+  .app[data-state="over"] .pulse{ background:var(--over); }
+  .app[data-state="idle"] .pulse{ background:var(--muted); }
+  @keyframes beat{ 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
+
+  .drift{ font-weight:600; font-size:.9rem; }
+  .drift[data-sign="behind"]{ color:var(--over); }
+  .drift[data-sign="ahead"]{ color:var(--ok); }
+  .drift[data-sign="zero"]{ color:var(--muted); }
+
+  .bar-actions{ display:flex; align-items:center; gap:.4rem; padding-inline:clamp(.6rem,1.5vw,1rem); }
+  .btn{
+    font-family:var(--arabic); font-size:.82rem; font-weight:600;
+    color:var(--ink-2); background:var(--surface-2);
+    border:1px solid var(--rule); border-radius:6px;
+    padding:.42rem .7rem; cursor:pointer;
+    display:inline-flex; align-items:center; gap:.35rem;
+    transition:border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .btn:hover{ border-color:var(--rule-strong); color:var(--ink); }
+  .btn:focus-visible{ outline:2px solid var(--steel); outline-offset:2px; }
+  .btn kbd{
+    font-family:var(--mono); font-size:.62rem; color:var(--muted);
+    border:1px solid var(--rule); border-radius:3px; padding:0 .25rem;
+  }
+  .btn-primary{ background:var(--steel-soft); border-color:transparent; color:var(--steel); }
+
+  /* ---------- stage ---------- */
+  .stage{ flex:1; display:flex; min-height:0; }
+  .slide{ display:none; flex:1; flex-direction:column; }
+  .slide[data-active="true"]{ display:flex; animation:enter .32s cubic-bezier(.2,.7,.3,1); }
+  @keyframes enter{ from{ opacity:0; transform:translateY(6px) } to{ opacity:1; transform:none } }
+
+  .wrap{
+    width:100%; max-width:1180px; margin-inline:auto;
+    padding:clamp(1.2rem,3.4vh,2.6rem) clamp(1.1rem,4vw,3rem);
+    display:flex; flex-direction:column; gap:clamp(1rem,2.6vh,1.9rem);
+    flex:1;
+  }
+
+  .head{ display:flex; flex-direction:column; gap:.55rem; }
+  .head-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:.55rem; }
+  .stamp{
+    font-family:var(--mono); font-size:.7rem; letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:.22rem .5rem; border-radius:4px;
+    background:var(--steel-soft); color:var(--steel); font-weight:600;
+    direction:ltr; unicode-bidi:isolate;
+  }
+  .stamp-plain{ background:transparent; color:var(--muted); border:1px solid var(--rule); }
+  h1{ font-size:clamp(1.9rem,5.2vw,3.4rem); line-height:1.12; margin:0; font-weight:750; letter-spacing:-.015em; text-wrap:balance; }
+  h2{ font-size:clamp(1.5rem,3.4vw,2.35rem); line-height:1.18; margin:0; font-weight:700; letter-spacing:-.01em; text-wrap:balance; }
+  h3{ font-size:1.02rem; margin:0; font-weight:650; }
+  .lede{ font-size:clamp(1rem,1.6vw,1.16rem); line-height:1.65; color:var(--ink-2); margin:0; max-width:62ch; }
+
+  .grid{ display:grid; gap:clamp(.7rem,1.6vw,1rem); }
+  .g2{ grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .g3{ grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
+
+  .card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:9px;
+    padding:clamp(.85rem,1.8vw,1.15rem);
+    display:flex; flex-direction:column; gap:.5rem;
+    box-shadow:var(--shadow);
+  }
+  .card-mark{ border-inline-start:3px solid var(--steel); }
+  .card p{ margin:0; color:var(--ink-2); line-height:1.6; font-size:.94rem; }
+
+  ul.list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:.48rem; }
+  ul.list li{
+    position:relative; padding-inline-start:1.05rem;
+    line-height:1.6; color:var(--ink-2); font-size:.95rem;
+  }
+  ul.list li::before{
+    content:""; position:absolute; inset-inline-start:0; top:.62em;
+    width:.34rem; height:.34rem; border-radius:1px; background:var(--steel);
+  }
+  ul.list li b{ color:var(--ink); font-weight:650; }
+
+  pre.code{
+    direction:ltr; text-align:left; unicode-bidi:isolate;
+    font-family:var(--mono); font-size:.8rem; line-height:1.65;
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:7px;
+    padding:.75rem .85rem; margin:0; overflow-x:auto; color:var(--ink-2);
+    white-space:pre;
+  }
+  code.inl{ font-family:var(--mono); font-size:.86em; background:var(--surface-2); border:1px solid var(--rule); border-radius:4px; padding:.05em .3em; direction:ltr; unicode-bidi:isolate; }
+
+  /* trainer cue strip */
+  .cue{
+    margin-top:auto;
+    border-top:1px solid var(--rule);
+    padding-top:.85rem;
+    display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .9rem;
+  }
+  .cue-label{
+    font-family:var(--mono); font-size:.64rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); border:1px dashed var(--rule-strong); border-radius:4px; padding:.2rem .45rem;
+  }
+  .split{ display:inline-flex; align-items:center; gap:.4rem; font-size:.85rem; color:var(--ink-2); }
+  .split b{ font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--ink); font-weight:600; direction:ltr; unicode-bidi:isolate; }
+  .cue-note{ font-size:.85rem; color:var(--muted); }
+
+  /* break slide */
+  .slide[data-kind="break"] .wrap{ align-items:center; justify-content:center; text-align:center; }
+  .break-mark{ font-family:var(--mono); font-size:clamp(3rem,12vw,7rem); font-weight:600; color:var(--rule-strong); letter-spacing:-.03em; direction:ltr; }
+
+  /* cover */
+  .cover-strip{ display:flex; flex-wrap:wrap; gap:0; border:1px solid var(--rule); border-radius:9px; overflow:hidden; background:var(--surface); }
+  .cover-cell{ flex:1 1 130px; padding:.9rem 1.05rem; display:flex; flex-direction:column; gap:.25rem; }
+  .cover-cell + .cover-cell{ border-inline-start:1px solid var(--rule); }
+  .cover-cell b{ font-size:1.35rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  .cover-cell span{ font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
+
+  /* ---------- rundown strip ---------- */
+  .strip{
+    display:flex; align-items:stretch; gap:2px;
+    padding:0 clamp(.6rem,1.6vw,1rem) .6rem;
+    background:var(--surface); border-top:1px solid var(--rule);
+    position:sticky; bottom:0; z-index:30;
+  }
+  .strip-inner{ display:flex; flex:1; gap:2px; padding-top:.6rem; min-width:0; }
+  .blk{
+    border:0; cursor:pointer; padding:0; min-width:6px;
+    background:var(--rule); border-radius:2px; height:1.9rem;
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:.6rem; color:var(--muted);
+    transition:background .2s ease;
+  }
+  .blk:hover{ background:var(--rule-strong); }
+  .blk:focus-visible{ outline:2px solid var(--steel); outline-offset:2px; }
+  .blk[data-done="true"]{ background:var(--steel-soft); color:var(--steel); }
+  .blk[data-cur="true"]{ background:var(--steel); color:var(--surface); }
+  .blk[data-cur="true"] .fill{ background:rgba(255,255,255,.28); }
+  .fill{ position:absolute; inset-block:0; inset-inline-start:0; width:0; background:var(--steel-soft); pointer-events:none; }
+  .blk span{ position:relative; z-index:1; white-space:nowrap; }
+  .strip-legend{ display:flex; align-items:center; padding-top:.6rem; padding-inline-start:.8rem; gap:.7rem; }
+  .strip-legend .tc{ font-size:.7rem; color:var(--muted); }
+
+  /* ---------- overlay ---------- */
+  .ov{
+    position:fixed; inset:0; z-index:80;
+    background:color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter:blur(10px);
+    display:none; flex-direction:column;
+  }
+  .ov[data-open="true"]{ display:flex; animation:enter .22s ease; }
+  .ov-head{
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:clamp(.9rem,2vw,1.3rem) clamp(1rem,4vw,2.4rem);
+    border-bottom:1px solid var(--rule); background:var(--surface);
+  }
+  .ov-body{ overflow-y:auto; padding:clamp(1.1rem,3vw,2rem) clamp(1rem,4vw,2.4rem) 4rem; }
+  .ov-inner{ max-width:1000px; margin-inline:auto; display:flex; flex-direction:column; gap:1.6rem; }
+
+  .stage-head{ display:flex; align-items:baseline; gap:.7rem; border-bottom:1px solid var(--rule); padding-bottom:.5rem; margin-bottom:.9rem; }
+  .stage-head .num{ font-family:var(--mono); font-size:.72rem; color:var(--steel); letter-spacing:.12em; }
+  .stage-head h3{ font-size:1.1rem; }
+  .stage-head .when{ font-size:.8rem; color:var(--muted); margin-inline-start:auto; }
+
+  .pcard{ background:var(--surface); border:1px solid var(--rule); border-radius:9px; overflow:hidden; box-shadow:var(--shadow); }
+  .pcard + .pcard{ margin-top:.75rem; }
+  .pcard-top{ display:flex; align-items:center; gap:.7rem; padding:.7rem .9rem; border-bottom:1px solid var(--rule); background:var(--surface-2); }
+  .pcard-top h4{ margin:0; font-size:.95rem; font-weight:650; }
+  .pcard-top .tag{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .copy{
+    margin-inline-start:auto; font-family:var(--arabic); font-size:.76rem; font-weight:600;
+    background:transparent; border:1px solid var(--rule-strong); color:var(--ink-2);
+    border-radius:5px; padding:.3rem .6rem; cursor:pointer; white-space:nowrap;
+  }
+  .copy:hover{ border-color:var(--steel); color:var(--steel); }
+  .copy:focus-visible{ outline:2px solid var(--steel); outline-offset:2px; }
+  .copy[data-copied="true"]{ border-color:var(--ok); color:var(--ok); }
+  .pcard pre{
+    margin:0; padding:.9rem 1rem; font-family:var(--mono); font-size:.79rem; line-height:1.75;
+    white-space:pre-wrap; word-break:break-word; color:var(--ink-2);
+    max-height:20rem; overflow-y:auto;
+  }
+  .pcard .why{ padding:.55rem .9rem; border-top:1px solid var(--rule); font-size:.82rem; color:var(--muted); }
+
+  /* rundown overview */
+  .rows{ display:flex; flex-direction:column; border:1px solid var(--rule); border-radius:9px; overflow:hidden; background:var(--surface); }
+  .row{
+    display:grid; grid-template-columns:7.5rem 1fr 4rem; align-items:center; gap:.8rem;
+    padding:.6rem .9rem; border:0; background:transparent; cursor:pointer;
+    text-align:start; font-family:var(--arabic); color:var(--ink); font-size:.95rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .row:last-child{ border-bottom:0; }
+  .row:hover{ background:var(--surface-2); }
+  .row:focus-visible{ outline:2px solid var(--steel); outline-offset:-2px; }
+  .row[data-cur="true"]{ background:var(--steel-soft); }
+  .row[data-done="true"]{ color:var(--muted); }
+  .row .tc{ font-size:.78rem; color:var(--muted); }
+  .row .mins{ font-family:var(--mono); font-size:.78rem; color:var(--muted); text-align:end; font-variant-numeric:tabular-nums; }
+
+  .toast{
+    position:fixed; inset-block-end:1.2rem; inset-inline-start:50%; transform:translateX(50%) translateY(1rem);
+    background:var(--ink); color:var(--paper); font-size:.85rem; font-weight:600;
+    padding:.5rem .9rem; border-radius:6px; z-index:120; opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .toast[data-show="true"]{ opacity:1; transform:translateX(50%) translateY(0); }
+
+  .help{ display:flex; flex-wrap:wrap; gap:.45rem 1.1rem; font-size:.8rem; color:var(--muted); }
+  .help span{ display:inline-flex; align-items:center; gap:.35rem; }
+  .help kbd{ font-family:var(--mono); font-size:.68rem; border:1px solid var(--rule-strong); border-radius:3px; padding:.05rem .3rem; color:var(--ink-2); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+  @media (max-width: 720px){
+    .bar-slot.hide-sm{ display:none; }
+    .strip-legend{ display:none; }
+    .row{ grid-template-columns:6rem 1fr; }
+    .row .mins{ display:none; }
+  }
+</style>
+
+<div class="app" id="app" dir="rtl" data-state="idle" data-running="false">
+
+  <!-- ================= timecode bar ================= -->
+  <header class="bar">
+    <div class="bar-slot bar-clock">
+      <div class="clock-label">
+        <i class="pulse"></i>
+        <span class="eyebrow" id="clockLabel">متبقٍ في الفقرة</span>
+      </div>
+      <div class="clock" id="clock">--:--</div>
+    </div>
+
+    <div class="bar-slot bar-now">
+      <span class="eyebrow"><span class="tc" id="curWindow">0:00 – 0:10</span> · فقرة <span class="tc" id="curIndex">1/11</span></span>
+      <div class="bar-title" id="curTitle">ترحيب وتمهيد</div>
+    </div>
+
+    <div class="bar-slot hide-sm">
+      <span class="eyebrow">الانحراف التراكمي</span>
+      <div class="drift" id="drift" data-sign="zero">في الوقت تمامًا</div>
+    </div>
+
+    <div class="bar-slot bar-actions">
+      <button class="btn btn-primary" id="btnPlay">ابدأ <kbd>space</kbd></button>
+      <button class="btn" id="btnReset" title="إعادة ضبط مؤقت الفقرة">تصفير <kbd>R</kbd></button>
+      <button class="btn" id="btnPrompts">الأوامر <kbd>P</kbd></button>
+      <button class="btn" id="btnOverview">الأجندة <kbd>O</kbd></button>
+    </div>
+  </header>
+
+  <!-- ================= slides ================= -->
+  <main class="stage" id="stage">
+
+    <!-- 0 · cover -->
+    <section class="slide" data-mins="0" data-from="—" data-to="—" data-title="الغلاف" data-kind="cover">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta">
+            <span class="stamp">ONLINE · 3H</span>
+            <span class="stamp stamp-plain">دفعة 01</span>
+          </div>
+          <h1>ورشة بناء منتج رقمي<br>مع قاعدة بيانات</h1>
+          <p class="lede">من الصفر إلى منتج يعمل على رابط حقيقي — نبني نظام إدارة طلبات لمتجر صغير باستخدام Laravel والذكاء الاصطناعي، وننشره مباشرة أمامك.</p>
+        </div>
+
+        <div class="cover-strip">
+          <div class="cover-cell"><b>25</b><span>مقعدًا</span></div>
+          <div class="cover-cell"><b>35 ر.ع</b><span>التكلفة</span></div>
+          <div class="cover-cell"><b>3:00</b><span>مدة الورشة</span></div>
+          <div class="cover-cell"><b>أونلاين</b><span>آلية الورشة</span></div>
+        </div>
+
+        <div class="grid g3">
+          <div class="card card-mark"><h3>طلاب الجامعات</h3><p>تحتاج مشروعًا حقيقيًا تعرضه، لا تمرينًا في دفتر.</p></div>
+          <div class="card card-mark"><h3>حديثو التخرج</h3><p>الفجوة بين الشهادة وأول وظيفة اسمها: منتج منشور.</p></div>
+          <div class="card card-mark"><h3>أصحاب الأعمال</h3><p>تريد أداة تدير بها عملك بدل جداول Excel المتفرقة.</p></div>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">قبل البدء</span>
+          <span class="cue-note">تأكد من: مشاركة الشاشة · تسجيل الجلسة · فتح المحرر بحجم خط كبير · تجهيز مشروع نظيف في مجلد فارغ.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="slide" data-mins="10" data-from="0:00" data-to="0:10" data-title="ترحيب وتمهيد">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">0:00 – 0:10</span><span class="stamp stamp-plain">الجزء الأول · التأسيس</span></div>
+          <h2>ترحيب وتمهيد</h2>
+          <p class="lede">نتفق على الوجهة قبل أن نكتب أول سطر: ما الذي سيخرج به كل واحد منكم بعد ثلاث ساعات بالضبط.</p>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <h3>ما ستخرج به اليوم</h3>
+            <ul class="list">
+              <li><b>منتج يعمل</b> على رابط يفتحه أي شخص من هاتفه</li>
+              <li><b>قاعدة بيانات</b> صممتها بنفسك مع مساعدة الذكاء الاصطناعي</li>
+              <li><b>طريقة عمل</b> تكررها في أي مشروع قادم</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>ما لن نفعله</h3>
+            <ul class="list">
+              <li>لن نحفظ صياغات جاهزة — سنتعلم كيف نبني الأمر</li>
+              <li>لن نقبل كودًا لا نفهمه، مهما بدا صحيحًا</li>
+              <li>لن نتوقف عند كل تفصيلة — الهدف منتج كامل لا كمال جزئي</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card card-mark">
+          <h3>المنتج الذي سنبنيه معًا</h3>
+          <p><b>نظام إدارة طلبات لمتجر صغير:</b> تسجيل دخول للمشرف، إدارة المنتجات والعملاء، إنشاء طلب يحوي عدة منتجات، حساب الإجمالي تلقائيًا، متابعة حالة الطلب، ولوحة بأرقام اليوم.</p>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>3د</b> ترحيب وتعارف سريع</span>
+          <span class="split"><b>4د</b> عرض حي للمنتج النهائي المنشور</span>
+          <span class="split"><b>3د</b> شرح قواعد الورشة والأجندة</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-mins="15" data-from="0:10" data-to="0:25" data-title="الذكاء الاصطناعي كشريك تطوير">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">0:10 – 0:25</span><span class="stamp stamp-plain">الجزء الأول · التأسيس</span></div>
+          <h2>الذكاء الاصطناعي كشريك تطوير</h2>
+          <p class="lede">الفرق بين من يحصل على كود صحيح ومن يحصل على فوضى ليس الأداة — بل بنية الأمر الذي يكتبه.</p>
+        </div>
+
+        <div class="grid g3">
+          <div class="card"><h3>Claude Code</h3><p>يعمل داخل الطرفية ويقرأ مشروعك كاملًا. الأنسب للمهام التي تمس عدة ملفات: بناء ميزة، إعادة هيكلة، تتبّع خطأ.</p></div>
+          <div class="card"><h3>Cursor / Copilot</h3><p>داخل المحرر. الأنسب للإكمال السريع أثناء الكتابة وتعديل ملف واحد أمامك.</p></div>
+          <div class="card"><h3>واجهة المحادثة</h3><p>للتفكير قبل الكتابة: مقارنة خيارات، شرح مفهوم، مراجعة تصميم قاعدة بيانات.</p></div>
+        </div>
+
+        <div class="card card-mark">
+          <h3>تشريح الأمر الجيد — خمسة أجزاء</h3>
+          <ul class="list">
+            <li><b>السياق:</b> ما المشروع، ما إصداره، وما الموجود فعلًا</li>
+            <li><b>المهمة:</b> فعل واحد واضح — «أنشئ»، «عدّل»، «اشرح»</li>
+            <li><b>القيود:</b> ما الممنوع — لا مكتبات جديدة، لا تعديل خارج هذا المجلد</li>
+            <li><b>صيغة المخرجات:</b> ملفات كاملة؟ diff؟ خطوات؟</li>
+            <li><b>معيار القبول:</b> كيف نعرف أن المهمة نجحت</li>
+          </ul>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <h3 style="color:var(--over)">أمر ضعيف</h3>
+            <pre class="code">اعمل لي صفحة منتجات في لارافيل</pre>
+          </div>
+          <div class="card">
+            <h3 style="color:var(--ok)">أمر محكم</h3>
+            <pre class="code">مشروع Laravel 11 + Blade + Tailwind، واجهة عربية RTL.
+أنشئ CRUD كاملًا للمنتجات: migration، Model، Controller
+من نوع resource، FormRequest للتحقق، و4 صفحات Blade.
+حقول: name، sku فريد، price عشري، stock صحيح، is_active.
+لا تضف أي حزمة خارجية. أعطني الملفات كاملة بمساراتها.
+المعيار: `php artisan migrate` يمر، و/products يفتح بلا خطأ.</pre>
+          </div>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>4د</b> الأدوات ومتى نستخدم كلًا منها</span>
+          <span class="split"><b>6د</b> الأجزاء الخمسة مع مثال حي</span>
+          <span class="split"><b>5د</b> تجربة مباشرة: نحسّن أمرًا ضعيفًا معًا</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" data-mins="20" data-from="0:25" data-to="0:45" data-title="أساسيات Laravel بسرعة">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">0:25 – 0:45</span><span class="stamp stamp-plain">الجزء الأول · التأسيس</span></div>
+          <h2>أساسيات Laravel بسرعة</h2>
+          <p class="lede">لن نشرح الإطار كله — سنشرح الطريق الذي يسلكه الطلب من رابط في المتصفح إلى صف في قاعدة البيانات.</p>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <h3>دورة حياة الطلب</h3>
+            <pre class="code">Browser  →  routes/web.php
+         →  Controller
+         →  Model  ⇄  Database
+         →  Blade View
+         →  Browser</pre>
+            <p>افهم هذه الأسهم الخمسة وستفهم 80% مما سنكتبه اليوم.</p>
+          </div>
+          <div class="card">
+            <h3>أين يسكن كل شيء</h3>
+            <ul class="list">
+              <li><code class="inl">routes/web.php</code> — الروابط</li>
+              <li><code class="inl">app/Http/Controllers</code> — المنطق</li>
+              <li><code class="inl">app/Models</code> — الجداول ككائنات</li>
+              <li><code class="inl">database/migrations</code> — بنية الجداول</li>
+              <li><code class="inl">resources/views</code> — الواجهات</li>
+              <li><code class="inl">.env</code> — الإعدادات والأسرار</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card card-mark">
+          <h3>على الطرفية — نبدأ الآن</h3>
+          <pre class="code">composer create-project laravel/laravel store-orders
+cd store-orders
+php artisan make:model Product -mcr   # Model + Migration + Controller
+php artisan migrate
+php artisan serve</pre>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>5د</b> دورة حياة الطلب على السبورة</span>
+          <span class="split"><b>6د</b> جولة في مجلدات المشروع</span>
+          <span class="split"><b>6د</b> أول Route وControllerعمليًا</span>
+          <span class="split"><b>3د</b> Migration وربط قاعدة البيانات</span>
+          <span class="cue-note">تحذير: لا تدخل في شرح Middleware أو Service Container — تجاوز الوقت يبدأ من هنا.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 break -->
+    <section class="slide" data-mins="5" data-from="0:45" data-to="0:50" data-title="استراحة" data-kind="break">
+      <div class="wrap">
+        <div class="break-mark">05:00</div>
+        <h2>استراحة</h2>
+        <p class="lede" style="text-align:center">عد بعد خمس دقائق — سنبدأ مباشرة ببناء قاعدة البيانات.</p>
+        <span class="cue-label">اتركوا نافذة الطرفية مفتوحة على المشروع</span>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide" data-mins="35" data-from="0:50" data-to="1:25" data-title="بناء المنتج (1) — البيانات">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">0:50 – 1:25</span><span class="stamp stamp-plain">الجزء الثاني · البناء العملي</span></div>
+          <h2>بناء المنتج (1) — البيانات</h2>
+          <p class="lede">قاعدة البيانات هي العمود الفقري. خطأ هنا يكلفك إعادة بناء كل ما فوقه — لذا نصممها بعناية قبل أن نكتب واجهة واحدة.</p>
+        </div>
+
+        <div class="grid g2">
+          <div class="card card-mark">
+            <h3>الجداول الأربعة</h3>
+            <pre class="code">products      id, name, sku, price, stock, is_active
+customers     id, name, phone, email, address
+orders        id, customer_id, status, total, ordered_at
+order_items   id, order_id, product_id, qty, unit_price</pre>
+          </div>
+          <div class="card">
+            <h3>العلاقات</h3>
+            <ul class="list">
+              <li>عميل واحد ← <b>عدة طلبات</b> (hasMany)</li>
+              <li>طلب واحد ← <b>عدة عناصر</b> (hasMany)</li>
+              <li>عنصر واحد ← <b>منتج واحد</b> (belongsTo)</li>
+              <li>الإجمالي <b>يُحسب</b> ولا يُكتب يدويًا</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>ترتيب العمل — لا تقفز خطوة</h3>
+          <ul class="list">
+            <li><b>١.</b> نصف الجداول للذكاء الاصطناعي بلغة عادية ونطلب المخطط</li>
+            <li><b>٢.</b> نراجع المخطط بأنفسنا قبل التنفيذ — هنا يقع أغلب الخطأ</li>
+            <li><b>٣.</b> Migrations ثم <code class="inl">migrate</code></li>
+            <li><b>٤.</b> Models مع العلاقات و<code class="inl">$fillable</code></li>
+            <li><b>٥.</b> Seeders ببيانات عربية واقعية لنرى شيئًا على الشاشة</li>
+            <li><b>٦.</b> CRUD للمنتجات والعملاء</li>
+          </ul>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>8د</b> تصميم المخطط ومراجعته</span>
+          <span class="split"><b>7د</b> Migrations والعلاقات</span>
+          <span class="split"><b>6د</b> Models وSeeders</span>
+          <span class="split"><b>14د</b> CRUD المنتجات والعملاء</span>
+          <span class="cue-note">افتح شاشة «مكتبة الأوامر» — الأوامر من ١ إلى ٥ تخص هذه الفقرة.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 break -->
+    <section class="slide" data-mins="5" data-from="1:25" data-to="1:30" data-title="استراحة" data-kind="break">
+      <div class="wrap">
+        <div class="break-mark">05:00</div>
+        <h2>استراحة</h2>
+        <p class="lede" style="text-align:center">شغّل <code class="inl">php artisan serve</code> وتأكد أن صفحة المنتجات تفتح قبل أن نكمل.</p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide" data-mins="40" data-from="1:30" data-to="2:10" data-title="بناء المنتج (2) — الواجهات والتحقق">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">1:30 – 2:10</span><span class="stamp stamp-plain">الجزء الثاني · البناء العملي</span></div>
+          <h2>بناء المنتج (2) — الواجهات والتحقق</h2>
+          <p class="lede">الآن نجعل المنتج قابلًا للاستخدام من إنسان حقيقي: شاشات عربية واضحة، بيانات لا تُقبل إلا صحيحة، وأخطاء تشرح نفسها.</p>
+        </div>
+
+        <div class="grid g3">
+          <div class="card"><h3>الواجهات</h3><p>لوحة رئيسية بأرقام اليوم، قائمة طلبات قابلة للبحث والفلترة، وشاشة إنشاء طلب بعدة منتجات.</p></div>
+          <div class="card"><h3>التحقق من البيانات</h3><p>FormRequest لكل عملية كتابة، برسائل عربية، مع منع بيع كمية أكبر من المخزون.</p></div>
+          <div class="card"><h3>معالجة الأخطاء</h3><p>صفحات 404 و500 بلغة المستخدم، ورسائل نجاح وفشل بعد كل عملية.</p></div>
+        </div>
+
+        <div class="card card-mark">
+          <h3>القواعد التي لا نتنازل عنها</h3>
+          <ul class="list">
+            <li>لا حقل يُحفظ دون قاعدة تحقق — <b>الواجهة ليست حماية</b></li>
+            <li>كل عملية تنتهي برسالة واضحة للمستخدم، لا بصمت</li>
+            <li>إنشاء الطلب وخصم المخزون داخل <b>معاملة واحدة</b> (transaction)</li>
+            <li>كل قائمة عليها <b>ترقيم صفحات</b> — لا نجلب آلاف الصفوف دفعة واحدة</li>
+          </ul>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>10د</b> التخطيط العام والواجهة العربية RTL</span>
+          <span class="split"><b>12د</b> شاشة إنشاء الطلب بعدة عناصر</span>
+          <span class="split"><b>8د</b> التحقق والرسائل</span>
+          <span class="split"><b>6د</b> البحث والفلترة والترقيم</span>
+          <span class="split"><b>4د</b> اللوحة الرئيسية</span>
+          <span class="cue-note">الأوامر من ٦ إلى ٩ في مكتبة الأوامر تخص هذه الفقرة.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide" data-mins="25" data-from="2:10" data-to="2:35" data-title="الرفع على السيرفر">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">2:10 – 2:35</span><span class="stamp stamp-plain">الجزء الثالث · الإطلاق</span></div>
+          <h2>الرفع على السيرفر</h2>
+          <p class="lede">المشروع الذي يعمل على جهازك فقط ليس منتجًا. في الدقائق القادمة يصبح لمشروعك رابط يفتحه أي أحد.</p>
+        </div>
+
+        <div class="grid g3">
+          <div class="card"><h3>الأسرع اليوم</h3><p>استضافة مُدارة تربط مستودع Git وتنشر تلقائيًا. مناسبة للورشة ولأول مشروع لك.</p></div>
+          <div class="card"><h3>الأكثر تحكمًا</h3><p>خادم VPS مع Nginx وPHP-FPM وMySQL. أرخص على المدى الطويل ويعلّمك ما يحدث فعلًا.</p></div>
+          <div class="card"><h3>الدومين وSSL</h3><p>ربط النطاق وتفعيل شهادة مجانية — لا تنشر مشروعًا على <code class="inl">http</code>.</p></div>
+        </div>
+
+        <div class="card card-mark">
+          <h3>قائمة ما قبل النشر — نمر عليها بندًا بندًا</h3>
+          <pre class="code">APP_ENV=production
+APP_DEBUG=false          # الأهم على الإطلاق
+APP_KEY=                 # php artisan key:generate
+DB_*                     # بيانات قاعدة بيانات الإنتاج
+
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+chmod -R 775 storage bootstrap/cache</pre>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>5د</b> خيارات الاستضافة والفرق بينها</span>
+          <span class="split"><b>7د</b> تجهيز المشروع وقائمة ما قبل النشر</span>
+          <span class="split"><b>9د</b> النشر الفعلي أمامكم</span>
+          <span class="split"><b>4د</b> الدومين وSSL</span>
+          <span class="cue-note">جهّز حساب الاستضافة ومفاتيح الدخول قبل الورشة — لا تضيّع الوقت في التسجيل.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="slide" data-mins="15" data-from="2:35" data-to="2:50" data-title="تجربة حية وأسئلة تقنية">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">2:35 – 2:50</span><span class="stamp stamp-plain">الجزء الثالث · الإطلاق</span></div>
+          <h2>تجربة حية وأسئلة تقنية</h2>
+          <p class="lede">افتحوا الرابط الآن من هواتفكم، أنشئوا طلبًا حقيقيًا، وأخبروني بأول شيء يتعطل.</p>
+        </div>
+
+        <div class="card card-mark">
+          <h3>الأعطال الخمسة الأكثر تكرارًا</h3>
+          <ul class="list">
+            <li><b>500 بلا تفاصيل</b> — راجع <code class="inl">storage/logs/laravel.log</code>، والسبب غالبًا <code class="inl">APP_KEY</code> فارغ</li>
+            <li><b>صفحة بيضاء</b> — صلاحيات <code class="inl">storage</code> و<code class="inl">bootstrap/cache</code></li>
+            <li><b>419 Page Expired</b> — <code class="inl">@csrf</code> ناقص في النموذج</li>
+            <li><b>الصور لا تظهر</b> — نسيت <code class="inl">php artisan storage:link</code></li>
+            <li><b>تعديل .env بلا أثر</b> — نفّذ <code class="inl">php artisan config:clear</code></li>
+          </ul>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>5د</b> تجربة جماعية للرابط</span>
+          <span class="split"><b>10د</b> حل المشاكل وأسئلة مفتوحة</span>
+          <span class="cue-note">إن تجاوزنا الوقت هنا، انقل الأسئلة المتبقية إلى مجموعة المتابعة وأغلق في موعده.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="slide" data-mins="10" data-from="2:50" data-to="3:00" data-title="الختام وخارطة الطريق">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">2:50 – 3:00</span><span class="stamp stamp-plain">الجزء الثالث · الإطلاق</span></div>
+          <h2>الختام وخارطة الطريق</h2>
+          <p class="lede">ما بنيناه اليوم هو نقطة البداية. هذه خطة الثلاثين يومًا القادمة لتحوّلها إلى مهارة تُوظَّف.</p>
+        </div>
+
+        <div class="grid g3">
+          <div class="card card-mark"><h3>الأسبوع الأول</h3><p>أعد بناء نفس المنتج من الصفر بلا مشاهدة التسجيل. هذا هو التمرين الذي يثبّت المعرفة.</p></div>
+          <div class="card card-mark"><h3>الأسبوعان التاليان</h3><p>أضف: تسجيل مستخدمين، صلاحيات، تصدير تقرير، ورفع صور للمنتجات.</p></div>
+          <div class="card card-mark"><h3>الأسبوع الرابع</h3><p>ابنِ منتجك أنت — فكرة من عملك أو دراستك — وانشره تحت نطاقك.</p></div>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <h3>مصادر للتعلم</h3>
+            <ul class="list">
+              <li>التوثيق الرسمي <code class="inl">laravel.com/docs</code> — ابدأ منه دائمًا</li>
+              <li>Laravel Bootcamp — مشروع كامل بخطوات</li>
+              <li>اقرأ كود مشاريع مفتوحة المصدر بالإطار</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>قبل أن تغادر</h3>
+            <ul class="list">
+              <li>احفظ رابط منتجك وشاركه في مجموعة الدفعة</li>
+              <li>احتفظ بمكتبة الأوامر — ستستخدمها في كل مشروع</li>
+              <li>ادفع المشروع إلى GitHub اليوم لا غدًا</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">تقسيم الوقت</span>
+          <span class="split"><b>5د</b> خارطة الطريق</span>
+          <span class="split"><b>3د</b> المصادر والمتابعة</span>
+          <span class="split"><b>2د</b> شكر وإغلاق</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · prompts intro -->
+    <section class="slide" data-mins="0" data-from="مرجع" data-to="—" data-title="مكتبة الأوامر" data-kind="ref">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp">مرجع دائم</span><span class="stamp stamp-plain">بلا مؤقت</span></div>
+          <h2>مكتبة الأوامر — ما بعد الهيكل</h2>
+          <p class="lede">الهيكل هو أسهل جزء؛ الذكاء الاصطناعي ينتجه في دقيقة. المهارة الحقيقية تبدأ بعده: كيف تحوّل هيكلًا فارغًا إلى منتج يتحمّل مستخدمًا حقيقيًا.</p>
+        </div>
+
+        <div class="grid g2">
+          <div class="card card-mark">
+            <h3>كيف تستخدم هذه الأوامر</h3>
+            <ul class="list">
+              <li>نفّذها <b>بالترتيب</b> — كل أمر يفترض ما قبله موجود</li>
+              <li>بدّل اسم المشروع والحقول بما يناسب فكرتك</li>
+              <li>بعد كل أمر: شغّل المشروع وتأكد قبل الانتقال</li>
+              <li>إن جاء الناتج خاطئًا، لا تعِد الأمر نفسه — <b>أضف القيد الناقص</b></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>القاعدة الذهبية</h3>
+            <p>كل أمر في هذه المكتبة ينتهي بسطر «المعيار». هذا السطر هو ما يمنع الذكاء الاصطناعي من تسليمك كودًا يبدو صحيحًا ولا يعمل — لأنه يعطيه اختبارًا يقيس نفسه به.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:.6rem; flex-wrap:wrap">
+          <button class="btn btn-primary" id="btnPromptsBig" style="font-size:.95rem; padding:.6rem 1rem">افتح مكتبة الأوامر الكاملة — ١٢ أمرًا</button>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">اختصارات</span>
+          <div class="help">
+            <span><kbd>←</kbd> التالي</span>
+            <span><kbd>→</kbd> السابق</span>
+            <span><kbd>space</kbd> تشغيل/إيقاف المؤقت</span>
+            <span><kbd>R</kbd> تصفير الفقرة</span>
+            <span><kbd>P</kbd> الأوامر</span>
+            <span><kbd>O</kbd> الأجندة</span>
+            <span><kbd>T</kbd> تبديل الوضع</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= rundown strip ================= -->
+  <footer class="strip">
+    <div class="strip-inner" id="strip"></div>
+    <div class="strip-legend">
+      <span class="tc" id="elapsedTotal">00:00 / 3:00:00</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ================= overview overlay ================= -->
+<div class="ov" id="ovAgenda" dir="rtl" style="font-family:var(--arabic); color:var(--ink)">
+  <div class="ov-head">
+    <div>
+      <div class="eyebrow">أجندة الورشة</div>
+      <h3 style="margin-top:.2rem">3 ساعات · 11 فقرة</h3>
+    </div>
+    <button class="btn" data-close="ovAgenda">إغلاق <kbd>esc</kbd></button>
+  </div>
+  <div class="ov-body">
+    <div class="ov-inner">
+      <div class="rows" id="agendaRows"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= prompts overlay ================= -->
+<div class="ov" id="ovPrompts" dir="rtl" style="font-family:var(--arabic); color:var(--ink)">
+  <div class="ov-head">
+    <div>
+      <div class="eyebrow">PROMPT LIBRARY</div>
+      <h3 style="margin-top:.2rem">أوامر ما بعد الهيكل — ١٢ أمرًا جاهزًا</h3>
+    </div>
+    <button class="btn" data-close="ovPrompts">إغلاق <kbd>esc</kbd></button>
+  </div>
+  <div class="ov-body">
+    <div class="ov-inner">
+
+      <!-- المرحلة صفر -->
+      <section>
+        <div class="stage-head">
+          <span class="num">STAGE 00</span>
+          <h3>قبل أن تكتب أي أمر</h3>
+          <span class="when">مرة واحدة لكل مشروع</span>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top">
+            <span class="tag">00</span>
+            <h4>ملف السياق الثابت</h4>
+            <button class="copy">نسخ</button>
+          </div>
+          <pre>ضع هذا النص في ملف CLAUDE.md في جذر المشروع (أو في بداية كل محادثة جديدة):
+
+المشروع: نظام إدارة طلبات لمتجر صغير.
+التقنيات: Laravel 11، Blade، Tailwind CSS، MySQL. لا Vue ولا React.
+اللغة: واجهة عربية بالكامل، اتجاه RTL، تواريخ ميلادية.
+الأسلوب: Controllers من نوع resource، التحقق في FormRequest دائمًا،
+لا منطق أعمال داخل ملفات Blade، أسماء الجداول بالإنجليزية والجمع.
+الممنوع: إضافة أي حزمة composer/npm جديدة دون أن تسألني أولًا.
+عند كل تعديل: أعطني الملفات كاملة مع مساراتها، وسطرًا واحدًا يشرح لماذا.</pre>
+          <div class="why">لماذا: يوفّر عليك إعادة كتابة السياق في كل أمر، ويمنع الأداة من الانحراف إلى تقنيات لم تطلبها.</div>
+        </div>
+      </section>
+
+      <!-- المرحلة الأولى -->
+      <section>
+        <div class="stage-head">
+          <span class="num">STAGE 01</span>
+          <h3>البيانات — الأساس الذي يُبنى عليه كل شيء</h3>
+          <span class="when">فقرة 0:50 – 1:25</span>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">01</span><h4>مراجعة الهيكل قبل البناء عليه</h4><button class="copy">نسخ</button></div>
+          <pre>راجع الهيكل الحالي للمشروع ثم أجب في نقاط قصيرة، دون تعديل أي ملف:
+
+1. ما الملفات والمجلدات الموجودة فعلًا الآن؟
+2. ما إصدار Laravel وPHP المستخدم؟
+3. هل الاتصال بقاعدة البيانات مضبوط في .env؟ وما اسم القاعدة؟
+4. ما الذي يجب إنشاؤه قبل أي شيء آخر، مرتبًا حسب الأولوية؟
+
+لا تكتب أي كود في هذه الخطوة. أريد خريطة الوضع الحالي فقط.</pre>
+          <div class="why">لماذا: أكثر خطأ شائع هو البناء فوق افتراضات خاطئة. هذا الأمر يجعل الأداة تقرأ الواقع بدل تخيّله.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">02</span><h4>تصميم المخطط والعلاقات</h4><button class="copy">نسخ</button></div>
+          <pre>صمّم مخطط قاعدة البيانات لنظام إدارة طلبات متجر صغير.
+
+المتطلبات بلغة العمل:
+- المتجر يبيع منتجات، لكل منتج اسم ورمز فريد وسعر وكمية في المخزون.
+- العميل له اسم ورقم هاتف وعنوان، وقد يكون له عدة طلبات.
+- الطلب يحوي عدة منتجات، لكل منتج كمية وسعر وقت البيع.
+- إجمالي الطلب يُحسب من عناصره ولا يُدخل يدويًا.
+- للطلب حالة: جديد، قيد التجهيز، تم التسليم، ملغى.
+
+أعطني أولًا جدولًا نصيًا بالأعمدة وأنواعها والمفاتيح والفهارس،
+ثم اشرح كل علاقة في سطر، ثم اذكر ثلاث حالات قد تكسر هذا التصميم.
+لا تكتب migrations بعد — أريد مراجعة التصميم أولًا.</pre>
+          <div class="why">لماذا: فصل «التصميم» عن «التنفيذ» يمنحك فرصة الاعتراض قبل أن تتحول الأخطاء إلى ملفات.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">03</span><h4>Migrations بعد اعتماد التصميم</h4><button class="copy">نسخ</button></div>
+          <pre>نفّذ المخطط الذي اتفقنا عليه كـ migrations في Laravel.
+
+القيود:
+- ملف migration منفصل لكل جدول، بترتيب صحيح يحترم المفاتيح الأجنبية.
+- استخدم foreignId()->constrained() مع cascadeOnDelete حيث يكون منطقيًا.
+- unique على sku، وفهرس على orders.status وorders.ordered_at.
+- الأسعار decimal(10,2) وليست float.
+- كل migration له دالة down() صحيحة وقابلة للتراجع.
+
+المعيار: php artisan migrate:fresh يمر دون أي خطأ،
+و php artisan migrate:rollback يتراجع عن كل شيء نظيفًا.</pre>
+          <div class="why">لماذا: <code>decimal</code> بدل <code>float</code>، وdown() صحيح — تفصيلتان تُنسيان دائمًا وتكلفان غاليًا لاحقًا.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">04</span><h4>Models والعلاقات</h4><button class="copy">نسخ</button></div>
+          <pre>أنشئ الـ Models الأربعة مع علاقاتها.
+
+المطلوب في كل Model:
+- $fillable محدد بدقة (لا تستخدم $guarded = [] أبدًا).
+- $casts للأسعار والتواريخ والقيم المنطقية.
+- كل العلاقات في الاتجاهين: hasMany / belongsTo / hasManyThrough حيث يلزم.
+- في Order: دالة recalculateTotal() تعيد حساب الإجمالي من عناصره.
+- في Product: scope للمنتجات النشطة، وscope للبحث بالاسم أو الرمز.
+
+المعيار: من tinker أستطيع تنفيذ
+Order::with('items.product','customer')->first()
+وأحصل على النتيجة بلا استعلامات N+1.</pre>
+          <div class="why">لماذا: <code>$guarded = []</code> ثغرة أمنية حقيقية، وذكر N+1 في المعيار يدفع الأداة لكتابة علاقات قابلة للتحميل المسبق.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">05</span><h4>بيانات تجريبية عربية واقعية</h4><button class="copy">نسخ</button></div>
+          <pre>أنشئ Factories وSeeders لتعبئة قاعدة البيانات ببيانات تجريبية واقعية.
+
+المطلوب:
+- 30 منتجًا بأسماء عربية حقيقية تناسب متجرًا صغيرًا وأسعار منطقية.
+- 15 عميلًا بأسماء عربية وأرقام هواتف بصيغة عُمانية (+968).
+- 40 طلبًا موزعة على آخر 60 يومًا، بحالات متنوعة،
+  كل طلب يحوي من 1 إلى 5 عناصر، والإجمالي محسوب من العناصر فعليًا.
+- مستخدم مشرف واحد: admin@store.test / كلمة مرور password.
+
+المعيار: php artisan migrate:fresh --seed يمر،
+وأي طلب أفتحه يكون إجماليه مساويًا لمجموع عناصره بالضبط.</pre>
+          <div class="why">لماذا: بيانات وهمية إنجليزية تخفي مشاكل RTL وطول النص العربي حتى يراها العميل.</div>
+        </div>
+      </section>
+
+      <!-- المرحلة الثانية -->
+      <section>
+        <div class="stage-head">
+          <span class="num">STAGE 02</span>
+          <h3>الواجهة والتحقق — ما يراه المستخدم</h3>
+          <span class="when">فقرة 1:30 – 2:10</span>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">06</span><h4>CRUD كامل لكيان واحد</h4><button class="copy">نسخ</button></div>
+          <pre>أنشئ CRUD كاملًا للمنتجات، وسأكرر النمط نفسه على بقية الكيانات.
+
+المطلوب:
+- ProductController من نوع resource بالدوال السبع.
+- Routes بـ Route::resource داخل مجموعة محمية بـ auth.
+- StoreProductRequest وUpdateProductRequest بقواعد تحقق ورسائل عربية.
+- أربع صفحات Blade: index بجدول وترقيم، create، edit، show.
+- تخطيط عربي RTL باستخدام Tailwind، مع layout مشترك.
+- تأكيد قبل الحذف، ورسالة نجاح بعد كل عملية.
+
+القيود: لا JavaScript إضافي، لا حزم جديدة، ولا منطق أعمال داخل Blade.
+المعيار: أستطيع إضافة منتج وتعديله وحذفه من المتصفح دون أي خطأ.</pre>
+          <div class="why">لماذا: بناء كيان واحد بعمق ثم تكرار نمطه أسرع وأنظف من طلب كل الشاشات دفعة واحدة.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">07</span><h4>الشاشة الأصعب — إنشاء طلب بعدة عناصر</h4><button class="copy">نسخ</button></div>
+          <pre>ابنِ شاشة إنشاء طلب جديد تحوي عدة منتجات في نموذج واحد.
+
+سلوك الشاشة:
+- اختيار العميل من قائمة قابلة للبحث.
+- إضافة صفوف منتجات ديناميكيًا (منتج، كمية، سعر الوحدة) وحذف أي صف.
+- سعر الوحدة يُملأ تلقائيًا من المنتج المختار ويمكن تعديله.
+- الإجمالي يتحدث فورًا في المتصفح، ويُعاد حسابه في الخادم قبل الحفظ.
+
+قواعد الخادم:
+- منع حفظ طلب بلا عناصر.
+- منع كمية أكبر من المخزون المتاح، برسالة عربية تذكر الكمية المتاحة.
+- الحفظ وخصم المخزون داخل DB::transaction واحدة.
+
+استخدم Alpine.js المضمّن مع Laravel فقط، بلا أي حزمة إضافية.
+المعيار: طلب بثلاثة منتجات يُحفظ بإجمالي صحيح، والمخزون ينقص بالمقدار الصحيح،
+ومحاولة طلب كمية أكبر من المخزون تُرفض ولا تترك بيانات ناقصة.</pre>
+          <div class="why">لماذا: هذه الشاشة تكشف كل ضعف في التصميم. المعيار هنا يفرض سلامة المعاملة (transaction) لا مجرد ظهور الشاشة.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">08</span><h4>البحث والفلترة والترقيم</h4><button class="copy">نسخ</button></div>
+          <pre>أضف بحثًا وفلترة إلى صفحة قائمة الطلبات.
+
+المطلوب:
+- بحث نصي في اسم العميل ورقم الطلب.
+- فلترة بالحالة، وبمدى تاريخي (من – إلى).
+- ترتيب بالتاريخ أو بالإجمالي، تصاعديًا وتنازليًا.
+- ترقيم صفحات 20 صفًا، مع بقاء كل الفلاتر في الرابط عند تغيير الصفحة.
+- شريط فلاتر عربي واضح مع زر «مسح الفلاتر».
+
+القيود: كل الفلترة في الاستعلام لا في PHP بعد الجلب،
+واستخدم when() بدل شروط if المتشعبة، وحمّل العلاقات مسبقًا.
+المعيار: صفحة الطلبات لا تتجاوز 5 استعلامات مهما كانت الفلاتر.</pre>
+          <div class="why">لماذا: قيد «5 استعلامات» يحوّل الأداء من رجاء إلى شرط قابل للقياس.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">09</span><h4>معالجة الأخطاء والرسائل</h4><button class="copy">نسخ</button></div>
+          <pre>وحّد معالجة الأخطاء والرسائل في المشروع كله.
+
+المطلوب:
+- مكوّن Blade واحد لرسائل النجاح والخطأ والتحذير، يُستدعى من التخطيط الرئيسي.
+- عرض أخطاء التحقق تحت كل حقل، وليس ككتلة واحدة في الأعلى.
+- صفحات أخطاء عربية مخصصة: 404 و403 و419 و500 بتصميم المشروع.
+- التقاط الاستثناءات في العمليات الحساسة وتسجيلها في اللوق
+  مع إظهار رسالة مفهومة للمستخدم لا تكشف تفاصيل تقنية.
+
+قاعدة الصياغة: كل رسالة خطأ تخبر المستخدم بما حدث وبما يفعله الآن.
+لا رسائل مثل «حدث خطأ ما».
+المعيار: تعطيل قاعدة البيانات يعطي صفحة عربية مفهومة، لا شاشة بيضاء ولا أثر خطأ.</pre>
+          <div class="why">لماذا: قاعدة الصياغة داخل الأمر هي ما يمنع رسائل «حدث خطأ ما» التي لا تفيد أحدًا.</div>
+        </div>
+      </section>
+
+      <!-- المرحلة الثالثة -->
+      <section>
+        <div class="stage-head">
+          <span class="num">STAGE 03</span>
+          <h3>قبل النشر — من مشروع إلى منتج</h3>
+          <span class="when">فقرة 2:10 – 2:35</span>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">10</span><h4>مراجعة أمنية قبل الإطلاق</h4><button class="copy">نسخ</button></div>
+          <pre>راجع المشروع أمنيًا قبل النشر، وأعطني تقريرًا مرتبًا حسب الخطورة.
+
+افحص تحديدًا:
+- هل يوجد $guarded = [] أو mass assignment غير محمي؟
+- هل كل مسارات التعديل والحذف محمية بـ auth وبصلاحية مناسبة؟
+- هل @csrf موجود في كل نموذج POST؟
+- هل هناك إخراج بـ {!! !!} قد يسمح بـ XSS؟
+- هل توجد استعلامات خام تقبل مدخلات المستخدم مباشرة؟
+- هل .env مستثنى في .gitignore، وهل تسرّب أي سر داخل الكود؟
+- هل APP_DEBUG سيكون false في الإنتاج؟
+
+لكل ملاحظة: الملف والسطر، لماذا هي خطرة، والإصلاح المقترح.
+لا تعدّل شيئًا الآن — أريد التقرير أولًا لأقرر.</pre>
+          <div class="why">لماذا: «تقرير أولًا، تعديل لاحقًا» يمنع تعديلات واسعة لا تفهمها قبل النشر مباشرة.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">11</span><h4>اختبارات للمسارات الحرجة</h4><button class="copy">نسخ</button></div>
+          <pre>اكتب اختبارات Feature للمسارات الحرجة فقط، لا لكل شيء.
+
+غطِّ هذه الحالات:
+1. زائر غير مسجل يُحوَّل إلى صفحة الدخول عند فتح /orders.
+2. إنشاء طلب صحيح يحفظ الطلب وعناصره وينقص المخزون.
+3. إنشاء طلب بكمية أكبر من المخزون يفشل ولا يحفظ أي صف.
+4. حذف منتج مرتبط بطلب لا يفسد الطلبات السابقة.
+5. صفحة قائمة الطلبات تفتح بحالة 200 لمستخدم مسجل.
+
+استخدم RefreshDatabase وFactories الموجودة.
+المعيار: php artisan test يمر بالكامل باللون الأخضر.</pre>
+          <div class="why">لماذا: تحديد الحالات الخمس يمنع توليد عشرات الاختبارات السطحية التي تبطئ ولا تحمي.</div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">12</span><h4>تجهيز النشر</h4><button class="copy">نسخ</button></div>
+          <pre>جهّز المشروع للنشر على خادم Ubuntu مع Nginx وPHP-FPM وMySQL.
+
+المطلوب:
+1. ملف .env.example محدّث بكل المفاتيح المطلوبة بلا أي قيمة سرية.
+2. قائمة أوامر النشر بالترتيب الصحيح من أول اتصال بالخادم حتى فتح الموقع.
+3. ملف إعداد Nginx كامل للمشروع مع توجيه public/ بشكل صحيح.
+4. الصلاحيات المطلوبة لمجلدي storage وbootstrap/cache.
+5. أوامر التخزين المؤقت للإنتاج، وأمر التراجع عنها عند التحديث.
+6. سكربت bash قصير باسم deploy.sh ينفّذ التحديث بأمان:
+   سحب التغييرات، تثبيت الاعتماديات، migrate --force، إعادة بناء الكاش.
+
+القيود: لا تفترض وجود Docker. اشرح كل أمر بسطر واحد قبله.
+المعيار: باتباع القائمة حرفيًا يفتح الموقع على الدومين بلا خطأ 500.</pre>
+          <div class="why">لماذا: طلب «اشرح كل أمر بسطر» يحوّل النشر من نسخ ولصق أعمى إلى شيء تفهمه وتكرره.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="stage-head">
+          <span class="num">STAGE 04</span>
+          <h3>عندما لا يعمل الأمر</h3>
+          <span class="when">في أي وقت</span>
+        </div>
+        <div class="pcard">
+          <div class="pcard-top"><span class="tag">SOS</span><h4>أمر تصحيح الأخطاء</h4><button class="copy">نسخ</button></div>
+          <pre>لدي خطأ. قبل أن تقترح أي إصلاح، شخّص السبب.
+
+نص الخطأ الكامل:
+[الصق الخطأ هنا كما هو، بما فيه رقم السطر]
+
+ما كنت أفعله عند حدوثه:
+[اشرح الخطوة بالضبط]
+
+ما جربته حتى الآن:
+[اذكر محاولاتك، أو اكتب: لم أجرب شيئًا]
+
+المطلوب منك بهذا الترتيب:
+1. السبب الجذري في جملتين، لا الأعراض.
+2. أصغر تعديل ممكن يصلحه.
+3. كيف أتأكد أنه انصلح.
+4. ما الذي يمنع تكراره مستقبلًا.
+
+لا تعد كتابة ملفات كاملة، ولا تغيّر شيئًا خارج سبب الخطأ.</pre>
+          <div class="why">لماذا: بلا هذا القيد، تميل الأدوات إلى إعادة كتابة ملفات سليمة وخلق أخطاء جديدة أثناء إصلاح خطأ واحد.</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">تم النسخ</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const app     = document.getElementById('app');
+  const slides  = Array.from(document.querySelectorAll('.slide'));
+  const clockEl = document.getElementById('clock');
+  const clockLb = document.getElementById('clockLabel');
+  const titleEl = document.getElementById('curTitle');
+  const winEl   = document.getElementById('curWindow');
+  const idxEl   = document.getElementById('curIndex');
+  const driftEl = document.getElementById('drift');
+  const stripEl = document.getElementById('strip');
+  const totalEl = document.getElementById('elapsedTotal');
+  const rowsEl  = document.getElementById('agendaRows');
+  const toastEl = document.getElementById('toast');
+  const btnPlay = document.getElementById('btnPlay');
+
+  const segs = slides.map((s, i) => ({
+    i,
+    mins:  parseInt(s.dataset.mins || '0', 10),
+    from:  s.dataset.from  || '—',
+    to:    s.dataset.to    || '—',
+    title: s.dataset.title || ('فقرة ' + (i + 1)),
+    kind:  s.dataset.kind  || 'talk'
+  }));
+  const TIMED = segs.filter(s => s.mins > 0);
+  const PLANNED_TOTAL = TIMED.reduce((a, s) => a + s.mins, 0) * 60;
+
+  const STORE = 'laravel-workshop-deck-v1';
+  let state = {
+    cur: 0,
+    running: false,
+    spent: segs.map(() => 0),   // seconds actually spent per segment
+    lastTick: null
+  };
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved && Array.isArray(saved.spent) && saved.spent.length === segs.length) {
+      state.cur   = Math.min(Math.max(saved.cur | 0, 0), segs.length - 1);
+      state.spent = saved.spent.map(n => Number(n) || 0);
+    }
+  } catch (e) { /* ignore corrupt state */ }
+
+  const save = () => {
+    try { localStorage.setItem(STORE, JSON.stringify({ cur: state.cur, spent: state.spent })); }
+    catch (e) { /* storage unavailable */ }
+  };
+
+  /* ---------- formatting ---------- */
+  const pad = n => String(n).padStart(2, '0');
+  function mmss(sec){
+    const s = Math.max(0, Math.round(sec));
+    return pad(Math.floor(s / 60)) + ':' + pad(s % 60);
+  }
+  function hmmss(sec){
+    const s = Math.max(0, Math.round(sec));
+    return Math.floor(s / 3600) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60);
+  }
+
+  /* ---------- build rundown strip + agenda ---------- */
+  segs.forEach(seg => {
+    const b = document.createElement('button');
+    b.className = 'blk';
+    b.type = 'button';
+    b.style.flexGrow = String(seg.mins > 0 ? seg.mins : 3);
+    b.title = seg.title + ' · ' + (seg.mins || '—') + ' د';
+    b.setAttribute('aria-label', 'انتقل إلى ' + seg.title);
+    b.innerHTML = '<i class="fill"></i><span>' + (seg.mins > 0 ? seg.mins : '·') + '</span>';
+    b.addEventListener('click', () => go(seg.i));
+    stripEl.appendChild(b);
+
+    const r = document.createElement('button');
+    r.className = 'row';
+    r.type = 'button';
+    r.innerHTML =
+      '<span class="tc">' + seg.from + (seg.mins > 0 ? ' – ' + seg.to : '') + '</span>' +
+      '<span>' + seg.title + '</span>' +
+      '<span class="mins">' + (seg.mins > 0 ? seg.mins + ' د' : '—') + '</span>';
+    r.addEventListener('click', () => { go(seg.i); closeAll(); });
+    rowsEl.appendChild(r);
+  });
+  const blocks = Array.from(stripEl.children);
+  const rows   = Array.from(rowsEl.children);
+
+  /* ---------- navigation ---------- */
+  function go(n){
+    const next = Math.min(Math.max(n, 0), segs.length - 1);
+    if (next === state.cur) return;
+    state.cur = next;
+    state.lastTick = performance.now();
+    // auto-run timed segments, idle on reference slides
+    state.running = segs[next].mins > 0;
+    slides.forEach((s, i) => s.dataset.active = String(i === next));
+    render();
+    save();
+  }
+  const next = () => go(state.cur + 1);
+  const prev = () => go(state.cur - 1);
+
+  function toggle(){
+    if (segs[state.cur].mins === 0) return;
+    state.running = !state.running;
+    state.lastTick = performance.now();
+    render();
+  }
+  function resetSeg(){
+    state.spent[state.cur] = 0;
+    state.lastTick = performance.now();
+    render();
+    save();
+  }
+
+  /* ---------- drift ---------- */
+  function driftSeconds(){
+    let d = 0;
+    for (let i = 0; i < state.cur; i++) {
+      if (segs[i].mins > 0) d += state.spent[i] - segs[i].mins * 60;
+    }
+    const cur = segs[state.cur];
+    if (cur.mins > 0) d += Math.max(0, state.spent[state.cur] - cur.mins * 60);
+    return d;
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    const seg     = segs[state.cur];
+    const planned = seg.mins * 60;
+    const spent   = state.spent[state.cur];
+    const left    = planned - spent;
+
+    titleEl.textContent = seg.title;
+    winEl.textContent   = seg.mins > 0 ? seg.from + ' – ' + seg.to : seg.from;
+    idxEl.textContent   = (state.cur + 1) + '/' + segs.length;
+
+    if (seg.mins === 0) {
+      app.dataset.state = 'idle';
+      clockEl.textContent = '--:--';
+      clockLb.textContent = 'شريحة مرجعية — بلا مؤقت';
+    } else if (left < 0) {
+      app.dataset.state = 'over';
+      clockEl.textContent = '+' + mmss(-left);
+      clockLb.textContent = 'تجاوزت الوقت';
+    } else {
+      app.dataset.state = (left <= Math.max(60, planned * 0.2)) ? 'warn' : 'ok';
+      clockEl.textContent = mmss(left);
+      clockLb.textContent = state.running ? 'متبقٍ في الفقرة' : 'متوقف — متبقٍ';
+    }
+    app.dataset.running = String(state.running);
+    btnPlay.firstChild.nodeValue = state.running ? 'إيقاف ' : 'ابدأ ';
+
+    const d = driftSeconds();
+    if (Math.abs(d) < 30) {
+      driftEl.dataset.sign = 'zero';
+      driftEl.textContent = 'في الوقت تمامًا';
+    } else if (d > 0) {
+      driftEl.dataset.sign = 'behind';
+      driftEl.textContent = 'متأخر بـ ' + mmss(d);
+    } else {
+      driftEl.dataset.sign = 'ahead';
+      driftEl.textContent = 'متقدم بـ ' + mmss(-d);
+    }
+
+    let done = 0;
+    state.spent.forEach((v, i) => { if (segs[i].mins > 0) done += v; });
+    totalEl.textContent = hmmss(done) + ' / ' + hmmss(PLANNED_TOTAL);
+
+    blocks.forEach((b, i) => {
+      b.dataset.cur  = String(i === state.cur);
+      b.dataset.done = String(i < state.cur);
+      const p = segs[i].mins > 0 ? Math.min(1, state.spent[i] / (segs[i].mins * 60)) : 0;
+      b.querySelector('.fill').style.width = (p * 100) + '%';
+    });
+    rows.forEach((r, i) => {
+      r.dataset.cur  = String(i === state.cur);
+      r.dataset.done = String(i < state.cur);
+    });
+  }
+
+  /* ---------- tick ---------- */
+  state.lastTick = performance.now();
+  function tick(now){
+    if (state.running && segs[state.cur].mins > 0) {
+      const dt = (now - (state.lastTick || now)) / 1000;
+      if (dt > 0 && dt < 5) state.spent[state.cur] += dt;
+      state.lastTick = now;
+      render();
+      if (Math.floor(state.spent[state.cur]) % 10 === 0) save();
+    } else {
+      state.lastTick = now;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ---------- overlays ---------- */
+  const ovAgenda  = document.getElementById('ovAgenda');
+  const ovPrompts = document.getElementById('ovPrompts');
+  const closeAll  = () => {
+    ovAgenda.dataset.open = 'false';
+    ovPrompts.dataset.open = 'false';
+  };
+  const openOv = el => {
+    closeAll();
+    el.dataset.open = 'true';
+    const b = el.querySelector('[data-close]');
+    if (b) b.focus();
+  };
+  document.getElementById('btnOverview').addEventListener('click', () => openOv(ovAgenda));
+  document.getElementById('btnPrompts').addEventListener('click',  () => openOv(ovPrompts));
+  document.getElementById('btnPromptsBig').addEventListener('click', () => openOv(ovPrompts));
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeAll));
+  btnPlay.addEventListener('click', toggle);
+  document.getElementById('btnReset').addEventListener('click', resetSeg);
+
+  /* ---------- copy ---------- */
+  let toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.dataset.show = 'true';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastEl.dataset.show = 'false'; }, 1600);
+  }
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = btn.closest('.pcard').querySelector('pre');
+      const text = pre.textContent;
+      const done = () => {
+        btn.dataset.copied = 'true';
+        btn.textContent = 'تم النسخ ✓';
+        toast('تم نسخ الأمر');
+        setTimeout(() => { btn.dataset.copied = 'false'; btn.textContent = 'نسخ'; }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => selectFallback(pre));
+      } else {
+        selectFallback(pre);
+      }
+    });
+  });
+  function selectFallback(pre){
+    const r = document.createRange();
+    r.selectNodeContents(pre);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+    toast('النص محدد — اضغط ⌘C للنسخ');
+  }
+
+  /* ---------- keyboard ---------- */
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    if (e.key === 'Escape') { closeAll(); return; }
+    const overlayOpen = ovAgenda.dataset.open === 'true' || ovPrompts.dataset.open === 'true';
+
+    switch (e.key) {
+      case 'ArrowLeft': case 'PageDown':
+        if (!overlayOpen) { e.preventDefault(); next(); } break;
+      case 'ArrowRight': case 'PageUp':
+        if (!overlayOpen) { e.preventDefault(); prev(); } break;
+      case ' ': case 'Spacebar':
+        if (!overlayOpen) { e.preventDefault(); toggle(); } break;
+      case 'r': case 'R':
+        if (!overlayOpen) resetSeg(); break;
+      case 'p': case 'P':
+        e.preventDefault();
+        ovPrompts.dataset.open === 'true' ? closeAll() : openOv(ovPrompts); break;
+      case 'o': case 'O':
+        e.preventDefault();
+        ovAgenda.dataset.open === 'true' ? closeAll() : openOv(ovAgenda); break;
+      case 't': case 'T': {
+        const root = document.documentElement;
+        const dark = root.getAttribute('data-theme') === 'dark' ||
+          (!root.hasAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+        root.setAttribute('data-theme', dark ? 'light' : 'dark');
+        break;
+      }
+      case 'f': case 'F':
+        if (!document.fullscreenElement) {
+          (document.documentElement.requestFullscreen || (() => {})).call(document.documentElement);
+        } else { document.exitFullscreen(); }
+        break;
+    }
+  });
+
+  /* ---------- boot ---------- */
+  slides.forEach((s, i) => s.dataset.active = String(i === state.cur));
+  render();
+  requestAnimationFrame(tick);
+})();
+</script>

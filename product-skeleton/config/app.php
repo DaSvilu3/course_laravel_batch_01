@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Muscat'),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,11 +78,19 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'ar'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'ar_SA'),
+
+    /*
+    | Languages offered in the UI language switcher. Arabic renders RTL.
+    */
+
+    'supported_locales' => ['ar', 'en'],
+
+    'rtl_locales' => ['ar'],
 
     /*
     |--------------------------------------------------------------------------

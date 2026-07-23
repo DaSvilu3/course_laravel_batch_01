@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Arabic renders right-to-left. The <html dir> attribute does most of the
+ * work; these rules fix the few things Tailwind cannot flip on its own.
+ */
+@layer base {
+    [dir='rtl'] .rtl-flip {
+        transform: scaleX(-1);
+    }
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+
+    .btn-primary {
+        @apply btn bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500;
+    }
+
+    .btn-secondary {
+        @apply btn border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-brand-500;
+    }
+
+    .btn-danger {
+        @apply btn bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500;
+    }
+
+    .card {
+        @apply rounded-xl border border-gray-200 bg-white shadow-sm;
+    }
+
+    .form-input-field {
+        @apply w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500;
+    }
+
+    .badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    }
+
+    .table-th {
+        @apply px-4 py-3 text-start text-xs font-semibold uppercase tracking-wider text-gray-500;
+    }
+
+    .table-td {
+        @apply whitespace-nowrap px-4 py-3 text-sm text-gray-700;
+    }
+}

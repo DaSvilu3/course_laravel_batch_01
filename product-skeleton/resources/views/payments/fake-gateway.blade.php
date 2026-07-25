@@ -7,8 +7,8 @@
 
     <dl class="mt-6 space-y-2 text-sm">
         <div class="flex justify-between">
-            <dt class="text-ink-500 dark:text-ink-400">{{ __('shop.order_number') }}</dt>
-            <dd class="font-mono text-ink-800 dark:text-ink-200">{{ $payment->order->number }}</dd>
+            <dt class="text-ink-500 dark:text-ink-400">{{ $payment->order ? __('shop.order_number') : __('billing.reference') }}</dt>
+            <dd class="font-mono text-ink-800 dark:text-ink-200">{{ $payment->order?->number ?? $payment->reference() }}</dd>
         </div>
         <div class="flex justify-between">
             <dt class="text-ink-500 dark:text-ink-400">{{ __('payments.amount_due') }}</dt>

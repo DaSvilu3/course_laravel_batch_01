@@ -26,6 +26,10 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'store_name' => ['nullable', 'string', 'max:255'],
+            'whatsapp' => ['nullable', 'string', 'max:32'],
+            // Secure logo upload: content re-validated by `image`, raster only.
+            'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
         ];
     }
 }

@@ -71,6 +71,40 @@ class Plan extends Model
         return (int) $this->feature($key, 0) === -1;
     }
 
+    /**
+     * Human-readable feature lines for the pricing cards.
+     * Each: ['label' => string, 'on' => bool].
+     */
+    public function featureLines(): array
+    {
+        $daily = (int) $this->feature('daily_orders', 0);
+        $monthly = (int) $this->feature('monthly_orders', -1);
+        $support = (string) $this->feature('support', 'community');
+
+        return [
+            [
+                'label' => $daily === -1
+                    ? __('billing.feat_daily_unlimited')
+                    : __('billing.feat_daily', ['count' => $daily]),
+                'on' => true,
+            ],
+            [
+                'label' => $monthly === -1
+                    ? __('billing.feat_monthly_unlimited')
+                    : __('billing.feat_monthly', ['count' => $monthly]),
+                'on' => true,
+            ],
+            [
+                'label' => __('billing.feat_tracking'),
+                'on' => (bool) $this->feature('tracking', false),
+            ],
+            [
+                'label' => __('billing.feat_support_'.$support),
+                'on' => true,
+            ],
+        ];
+    }
+
     // ---------------------------------------------------------------- helpers
 
     public function formattedPrice(): string

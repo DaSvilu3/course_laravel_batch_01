@@ -4,91 +4,79 @@
     {{-- ================================================================= --}}
     {{-- 1. HERO                                                           --}}
     {{-- ================================================================= --}}
-    <section id="top" class="relative overflow-hidden rounded-3xl border border-ink-200/60 bg-white/60 px-6 py-16 backdrop-blur-sm sm:px-12 sm:py-24 dark:border-ink-800/60 dark:bg-ink-900/40">
+    <section id="top" class="relative overflow-hidden rounded-3xl border border-ink-200/60 bg-white/60 px-6 py-14 backdrop-blur-sm sm:px-12 sm:py-20 dark:border-ink-800/60 dark:bg-ink-900/40">
         {{-- decorative glow blobs --}}
         <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
             <div class="absolute -end-24 -top-24 h-80 w-80 rounded-full bg-brand-500/20 blur-3xl"></div>
             <div class="absolute -bottom-32 -start-20 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl"></div>
         </div>
 
-        <div class="mx-auto max-w-3xl text-center">
-            <span class="eyebrow animate-fade-up">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                {{ __('landing.hero_badge') }}
-            </span>
+        <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            {{-- ---- Copy ---- --}}
+            <div class="text-center lg:text-start">
+                <span class="eyebrow animate-fade-up">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+                    {{ __('landing.hero_badge') }}
+                </span>
 
-            <h1 class="mt-6 animate-fade-up text-4xl font-black leading-tight tracking-tight text-ink-900 sm:text-6xl dark:text-white" style="animation-delay:.05s">
-                {{ __('landing.hero_title') }}
-                <span class="mt-1 block text-gradient">{{ __('landing.hero_highlight') }}</span>
-            </h1>
+                <h1 class="mt-6 animate-fade-up text-4xl font-black leading-tight tracking-tight text-ink-900 sm:text-5xl xl:text-6xl dark:text-white" style="animation-delay:.05s">
+                    {{ __('landing.hero_title') }}
+                    <span class="mt-1 block text-gradient">{{ __('landing.hero_highlight') }}</span>
+                </h1>
 
-            <p class="mx-auto mt-6 max-w-2xl animate-fade-up text-lg leading-relaxed text-ink-600 dark:text-ink-300" style="animation-delay:.1s">
-                {{ __('landing.hero_subtitle') }}
-            </p>
+                <p class="mx-auto mt-6 max-w-xl animate-fade-up text-lg leading-relaxed text-ink-600 lg:mx-0 dark:text-ink-300" style="animation-delay:.1s">
+                    {{ __('landing.hero_subtitle') }}
+                </p>
 
-            <div class="mt-9 flex animate-fade-up flex-wrap justify-center gap-3" style="animation-delay:.15s">
-                <a href="{{ route('register') }}" class="btn-primary px-6 py-3 text-base">
-                    {{ __('landing.hero_cta') }}
-                    <svg class="h-4 w-4 rtl-flip" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                </a>
-                <a href="#pricing" class="btn-secondary px-6 py-3 text-base">
-                    {{ __('landing.hero_cta_secondary') }}
-                </a>
+                <div class="mt-9 flex animate-fade-up flex-wrap justify-center gap-3 lg:justify-start" style="animation-delay:.15s">
+                    <a href="{{ route('register') }}" class="btn-primary px-6 py-3 text-base">
+                        {{ __('landing.hero_cta') }}
+                        <svg class="h-4 w-4 rtl-flip" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </a>
+                    <a href="#pricing" class="btn-secondary px-6 py-3 text-base">
+                        {{ __('landing.hero_cta_secondary') }}
+                    </a>
+                </div>
+
+                <p class="mt-5 flex animate-fade-up items-center justify-center gap-2 text-sm text-ink-500 lg:justify-start dark:text-ink-400" style="animation-delay:.2s">
+                    <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" /></svg>
+                    {{ __('landing.hero_note') }}
+                </p>
             </div>
 
-            <p class="mt-5 animate-fade-up text-sm text-ink-500 dark:text-ink-400" style="animation-delay:.2s">
-                {{ __('landing.hero_note') }}
-            </p>
-        </div>
+            {{-- ---- Product photo + floating cards ---- --}}
+            <div class="relative animate-fade-up" style="animation-delay:.15s">
+                <div aria-hidden="true" class="absolute inset-0 -z-10 translate-x-4 translate-y-6 rounded-[2rem] bg-gradient-to-br from-brand-500/30 to-violet-500/30 blur-2xl rtl:-translate-x-4"></div>
 
-        {{-- faux dashboard preview card --}}
-        <div class="mx-auto mt-14 max-w-4xl animate-fade-up" style="animation-delay:.25s">
-            <div class="rounded-2xl border border-ink-200/80 bg-white/80 p-3 shadow-lift backdrop-blur dark:border-ink-800 dark:bg-ink-950/60">
-                {{-- window chrome --}}
-                <div class="flex items-center gap-1.5 px-2 pb-3 pt-1">
-                    <span class="h-2.5 w-2.5 rounded-full bg-rose-400/80"></span>
-                    <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
-                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></span>
+                <div class="relative overflow-hidden rounded-[1.75rem] border border-white/60 bg-white shadow-lift ring-1 ring-ink-900/5 dark:border-ink-800 dark:ring-white/10">
+                    <img src="{{ asset('landing_page_shop.jpeg') }}" alt="{{ __('landing.hero_highlight') }}"
+                         class="aspect-[4/3] w-full object-cover" loading="eager" width="1000" height="664">
+                    <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/20 to-transparent"></div>
                 </div>
-                <div class="rounded-xl border border-ink-200/70 bg-ink-50/60 p-4 dark:border-ink-800/70 dark:bg-ink-900/60">
-                    {{-- stat chips --}}
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-xl border border-ink-200/70 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-medium text-ink-500 dark:text-ink-400">{{ __('landing.nav_pricing') }}</span>
-                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m4-14H9.5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5H8" /></svg>
-                                </span>
-                            </div>
-                            <p class="mt-2 text-2xl font-black text-ink-900 dark:text-white">98%</p>
-                        </div>
-                        <div class="rounded-xl border border-ink-200/70 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-medium text-ink-500 dark:text-ink-400">{{ __('landing.nav_features') }}</span>
-                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" /></svg>
-                                </span>
-                            </div>
-                            <p class="mt-2 text-2xl font-black text-ink-900 dark:text-white">12k+</p>
-                        </div>
-                        <div class="rounded-xl border border-ink-200/70 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-medium text-ink-500 dark:text-ink-400">{{ __('landing.trusted_by') }}</span>
-                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8" /></svg>
-                                </span>
-                            </div>
-                            <p class="mt-2 text-2xl font-black text-ink-900 dark:text-white">4.9<span class="text-base font-semibold text-ink-400">/5</span></p>
-                        </div>
+
+                {{-- floating: new order toast --}}
+                <div class="absolute top-4 start-4 flex items-center gap-2.5 rounded-2xl border border-ink-200/70 bg-white/95 px-3.5 py-2.5 shadow-lift backdrop-blur dark:border-ink-700 dark:bg-ink-900/95">
+                    <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m-3 0h13.5l-.75 9a1.5 1.5 0 0 1-1.5 1.35H7.5a1.5 1.5 0 0 1-1.5-1.35l-.75-9Z" /></svg>
+                        <span class="absolute -end-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-ink-900"></span>
+                    </span>
+                    <div class="text-start">
+                        <p class="text-sm font-bold text-ink-900 dark:text-white">{{ __('landing.hero_toast_title') }}</p>
+                        <p class="text-xs text-ink-500 dark:text-ink-400">{{ __('landing.hero_toast_sub') }}</p>
                     </div>
-                    {{-- faux chart bars --}}
-                    <div class="mt-3 flex h-24 items-end gap-2 rounded-xl border border-ink-200/70 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
-                        @foreach ([40, 65, 50, 80, 60, 95, 75] as $h)
-                            <div class="flex-1 rounded-t bg-gradient-to-t from-brand-500/70 to-violet-500/70" style="height: {{ $h }}%"></div>
-                        @endforeach
+                </div>
+
+                {{-- floating: delivered + tracker chip --}}
+                <div class="absolute bottom-4 end-4 rounded-2xl border border-ink-200/70 bg-white/95 px-4 py-3 shadow-lift backdrop-blur dark:border-ink-700 dark:bg-ink-900/95">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-violet-500 text-white">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" /></svg>
+                        </span>
+                        <span class="text-sm font-bold text-ink-900 dark:text-white">{{ __('landing.hero_chip_delivered') }}</span>
                     </div>
+                    <p dir="ltr" class="mt-1.5 text-end font-mono text-xs font-semibold tracking-wider text-brand-600 dark:text-brand-300">TLB-9F3K2A</p>
                 </div>
             </div>
         </div>
@@ -98,13 +86,14 @@
     {{-- 2. TRUST STRIP                                                    --}}
     {{-- ================================================================= --}}
     <section class="mt-16 text-center">
-        <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('landing.trusted_by') }}</p>
-        <div class="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-ink-400 dark:text-ink-600">
-            <span class="text-xl font-black tracking-tight">Northwind</span>
-            <span class="text-xl font-extrabold italic tracking-tight">Lumen</span>
-            <span class="text-xl font-black uppercase tracking-widest">Atlas</span>
-            <span class="text-xl font-bold tracking-tight">Quantic</span>
-            <span class="text-xl font-black tracking-tight">Vertex</span>
+        <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('landing.usecases_title') }}</p>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+            @foreach (__('landing.usecases_items') as $use)
+                <span class="inline-flex items-center gap-2 rounded-full border border-ink-200/80 bg-white/70 px-4 py-2 text-sm font-semibold text-ink-700 shadow-soft dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-200">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-gradient-to-br from-brand-500 to-violet-500"></span>
+                    {{ $use }}
+                </span>
+            @endforeach
         </div>
     </section>
 
@@ -122,26 +111,29 @@
         </div>
 
         @php
-            $featureIcons = [
-                'M4 7h16M4 12h16M4 17h10',
-                'M3 10h18M7 15h1m4 0h1M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
-                'M12 3l7 4v5c0 4-3 7-7 9-4-2-7-5-7-9V7l7-4z',
-                'M3 12h4l3 8 4-16 3 8h4',
-                'M3 5h18M3 12h18M3 19h18',
-                'M12 3a9 9 0 1 0 9 9M12 3v9l6.5 3.8',
+            // Distinct icon + accent per feature (class strings kept literal so Tailwind keeps them).
+            $featureMeta = [
+                ['icon' => 'M13.5 6H18a3 3 0 0 1 0 6h-1.5m-9 0H6a3 3 0 0 1 0-6h4.5M8 9h8', 'tile' => 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300'],
+                ['icon' => 'M6 4h12a1 1 0 0 1 1 1v14l-3.5-2-3.5 2-3.5-2L5 19V5a1 1 0 0 1 1-1Zm3 5h6M9 12h6', 'tile' => 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300'],
+                ['icon' => 'M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 13h6v6h-6z', 'tile' => 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300'],
+                ['icon' => 'M12 3l7 4v5c0 4-3 7-7 9-4-2-7-5-7-9V7l7-4zM9.5 12l2 2 3.5-3.5', 'tile' => 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300'],
+                ['icon' => 'M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM19.5 10.5c0 7.14-7.5 11.25-7.5 11.25S4.5 17.64 4.5 10.5a7.5 7.5 0 1 1 15 0Z', 'tile' => 'bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300'],
+                ['icon' => 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0c2.49 0 4.5-4.03 4.5-9S14.49 3 12 3 7.5 7.03 7.5 12 9.51 21 12 21ZM3.6 9h16.8M3.6 15h16.8', 'tile' => 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300'],
             ];
         @endphp
 
-        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             @foreach (__('landing.features_items') as $i => $f)
-                <div class="card-hover p-6">
-                    <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-soft">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $featureIcons[$i % count($featureIcons)] }}" />
+                @php $m = $featureMeta[$i % count($featureMeta)]; @endphp
+                <div class="group relative overflow-hidden rounded-2xl border border-ink-200/70 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-lift dark:border-ink-800 dark:bg-ink-900/60 dark:hover:border-brand-500/40">
+                    <div aria-hidden="true" class="pointer-events-none absolute -end-10 -top-10 h-24 w-24 rounded-full bg-gradient-to-br from-brand-500/0 to-violet-500/0 blur-2xl transition group-hover:from-brand-500/10 group-hover:to-violet-500/10"></div>
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $m['tile'] }} transition group-hover:scale-110">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $m['icon'] }}" />
                         </svg>
                     </span>
-                    <h3 class="mt-5 text-lg font-semibold text-ink-900 dark:text-white">{{ $f['title'] }}</h3>
-                    <p class="mt-2 leading-relaxed text-ink-600 dark:text-ink-300">{{ $f['body'] }}</p>
+                    <h3 class="mt-5 text-lg font-bold text-ink-900 dark:text-white">{{ $f['title'] }}</h3>
+                    <p class="mt-2 text-sm leading-relaxed text-ink-600 dark:text-ink-300">{{ $f['body'] }}</p>
                 </div>
             @endforeach
         </div>
@@ -188,52 +180,57 @@
             <p class="mt-4 text-lg leading-relaxed text-ink-600 dark:text-ink-300">{{ __('landing.pricing_subtitle') }}</p>
         </div>
 
-        <div class="mt-12 grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="mx-auto mt-12 grid max-w-4xl items-stretch gap-6 sm:grid-cols-2">
             @foreach ($plans as $plan)
-                <div class="card relative p-8 {{ $plan->is_featured ? 'ring-2 ring-brand-500 shadow-lift' : '' }}">
+                <div class="relative flex flex-col rounded-3xl p-8
+                    {{ $plan->is_featured
+                        ? 'border border-brand-500/40 bg-gradient-to-b from-brand-50/80 to-white shadow-lift ring-1 ring-brand-500/30 sm:-my-2 sm:py-10 dark:from-brand-500/10 dark:to-ink-900'
+                        : 'border border-ink-200/70 bg-white dark:border-ink-800 dark:bg-ink-900/60' }}">
+
                     @if ($plan->is_featured)
-                        <span class="absolute -top-3 end-6 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-brand-600 to-violet-600 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-glow">
-                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5-5-2.7-5 2.7 1-5.5-4-3.9 5.5-.8L12 3z" /></svg>
+                        <span class="absolute -top-3.5 start-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-600 to-violet-600 px-4 py-1.5 text-xs font-bold text-white shadow-glow rtl:translate-x-1/2">
+                            <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.29 3.96a1 1 0 0 0 .95.69h4.16c.97 0 1.37 1.24.59 1.81l-3.37 2.45a1 1 0 0 0-.36 1.12l1.28 3.95c.3.93-.75 1.7-1.53 1.12l-3.37-2.44a1 1 0 0 0-1.18 0L6.5 18.5c-.78.58-1.83-.19-1.53-1.12l1.28-3.95a1 1 0 0 0-.36-1.12L2.52 9.86c-.78-.57-.38-1.81.59-1.81H7.3a1 1 0 0 0 .95-.69l1.29-3.96Z" /></svg>
                             {{ __('landing.most_popular') }}
                         </span>
                     @endif
 
-                    <h3 class="text-lg font-bold text-ink-900 dark:text-white">{{ $plan->translate('name') }}</h3>
-                    <p class="mt-2 min-h-[2.5rem] text-sm leading-relaxed text-ink-500 dark:text-ink-400">{{ $plan->description }}</p>
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-xl font-black text-ink-900 dark:text-white">{{ $plan->translate('name') }}</h3>
+                    </div>
+                    <p class="mt-2 text-sm leading-relaxed text-ink-500 dark:text-ink-400">{{ $plan->description }}</p>
 
-                    <div class="mt-6 flex items-baseline gap-1">
-                        <span class="text-4xl font-black tracking-tight text-ink-900 dark:text-white">{{ $plan->formattedPrice() }}</span>
+                    <div class="mt-6 flex items-end gap-1.5">
+                        <span class="text-5xl font-black tracking-tight text-ink-900 dark:text-white">{{ $plan->formattedPrice() }}</span>
                         @unless ($plan->isFree())
-                            <span class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('landing.per_month') }}</span>
+                            <span class="pb-1.5 text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('landing.per_month') }}</span>
                         @endunless
                     </div>
 
                     @if ($plan->trial_days > 0)
-                        <p class="mt-2 text-xs font-medium text-brand-600 dark:text-brand-400">{{ __('billing.trial_days', ['days' => $plan->trial_days]) }}</p>
+                        <p class="mt-2 text-xs font-semibold text-brand-600 dark:text-brand-400">{{ __('billing.trial_days', ['days' => $plan->trial_days]) }}</p>
                     @endif
 
-                    <ul class="mt-6 space-y-3 text-sm">
-                        @php $maxProjects = $plan->feature('max_projects'); @endphp
-                        <li class="flex items-start gap-2.5 text-ink-700 dark:text-ink-200">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            <span>{{ $maxProjects === -1 ? 'Unlimited projects' : $maxProjects . ' projects' }}</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 {{ $plan->feature('api_access') ? 'text-ink-700 dark:text-ink-200' : 'text-ink-400 dark:text-ink-500' }}">
-                            @if ($plan->feature('api_access'))
-                                <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            @else
-                                <svg class="mt-0.5 h-4 w-4 shrink-0 text-ink-300 dark:text-ink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
-                            @endif
-                            <span>API access</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-ink-700 dark:text-ink-200">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            <span class="capitalize">{{ $plan->feature('support') }} support</span>
-                        </li>
+                    <div class="my-6 h-px bg-ink-100 dark:bg-ink-800"></div>
+
+                    <ul class="space-y-3.5 text-sm">
+                        @foreach ($plan->featureLines() as $line)
+                            <li class="flex items-center gap-3 {{ $line['on'] ? 'text-ink-700 dark:text-ink-200' : 'text-ink-400 line-through decoration-ink-300 dark:text-ink-500' }}">
+                                @if ($line['on'])
+                                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                    </span>
+                                @else
+                                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink-100 text-ink-400 dark:bg-ink-800 dark:text-ink-500">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
+                                    </span>
+                                @endif
+                                <span>{{ $line['label'] }}</span>
+                            </li>
+                        @endforeach
                     </ul>
 
-                    <a href="{{ route('register') }}" class="{{ $plan->is_featured ? 'btn-primary' : 'btn-secondary' }} mt-8 w-full py-3">
-                        {{ __('landing.choose_plan') }}
+                    <a href="{{ route('register') }}" class="{{ $plan->is_featured ? 'btn-primary' : 'btn-secondary' }} mt-8 w-full justify-center py-3">
+                        {{ $plan->isFree() ? __('landing.hero_cta') : __('landing.choose_plan') }}
                     </a>
                 </div>
             @endforeach

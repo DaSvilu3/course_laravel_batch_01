@@ -5,78 +5,92 @@ return [
     'nav_features' => 'Features',
     'nav_pricing' => 'Pricing',
     'nav_privacy' => 'Privacy',
+    'nav_track' => 'Track an order',
     'sign_in' => 'Sign in',
-    'get_started' => 'Get started',
+    'get_started' => 'Start free',
     'go_to_dashboard' => 'Go to dashboard',
 
     // ---- Hero ---------------------------------------------------------
-    'hero_badge' => 'Built on Laravel · Bilingual · Ready to ship',
-    'hero_title' => 'The starter kit for your next SaaS',
-    'hero_highlight' => 'launch in days, not months',
-    'hero_subtitle' => 'Plans, subscriptions, payments, roles and an admin panel — everything a subscription business needs, wired up and ready to extend.',
+    'hero_badge' => 'Made for Omani merchants · Works with WhatsApp & Instagram',
+    'hero_title' => 'Turn every WhatsApp chat into a',
+    'hero_highlight' => 'tidy, trackable order',
+    'hero_subtitle' => 'Stop juggling orders across chats and screenshots. Share one link, let the customer confirm the details, and manage everything from a single dashboard — with a tracker code for every order.',
     'hero_cta' => 'Start free',
-    'hero_cta_secondary' => 'View pricing',
-    'hero_note' => 'No credit card required · 14-day Pro trial',
+    'hero_cta_secondary' => 'See pricing',
+    'hero_note' => 'Free plan · 10 orders a day · no credit card',
+
+    // ---- Hero floating cards -----------------------------------------
+    'hero_toast_title' => 'New order received',
+    'hero_toast_sub' => 'via WhatsApp · just now',
+    'hero_chip_delivered' => 'Order delivered',
 
     // ---- Social proof -------------------------------------------------
-    'trusted_by' => 'Powering teams that ship fast',
+    'trusted_by' => 'Built for the way Omani shops really sell',
+    'usecases_title' => 'Loved by every kind of seller',
+    'usecases_items' => [
+        'Phone shops',
+        'Abaya boutiques',
+        'Freelancers',
+        'Home businesses',
+        'Direct sellers',
+    ],
 
     // ---- Features -----------------------------------------------------
-    'features_eyebrow' => 'Everything included',
-    'features_title' => 'A complete subscription backend',
-    'features_subtitle' => 'Stop rebuilding the same billing plumbing. It is already here, tested, and documented.',
+    'features_eyebrow' => 'Everything you need',
+    'features_title' => 'Your orders, finally in one place',
+    'features_subtitle' => 'No POS to wire up, no online store to build. Just the order flow you already run — made simple.',
     'features_items' => [
         [
-            'title' => 'Plans & subscriptions',
-            'body' => 'Free, trial and paid plans with monthly or yearly billing, grace periods and one active plan per customer.',
+            'title' => 'One order link',
+            'body' => 'Share a single link on WhatsApp or Instagram. The customer fills in their details after you agree the order — no app, no account.',
         ],
         [
-            'title' => 'Payments that reconcile',
-            'body' => 'Hosted checkout, signed return URLs and server-to-server webhooks confirm every payment with the gateway.',
+            'title' => 'A tracker code per order',
+            'body' => 'Every order gets a short code. Customers follow their order status themselves, so you get fewer "where is my order?" messages.',
         ],
         [
-            'title' => 'Roles & access control',
-            'body' => 'Admin and customer roles, a subscribed-only middleware, and plan-based feature gating out of the box.',
+            'title' => 'A dashboard that fits your day',
+            'body' => 'See new orders the moment they arrive, and move each one from new → confirmed → preparing → delivered in a tap.',
         ],
         [
-            'title' => 'Admin panel',
-            'body' => 'Manage plans, subscriptions, customers and revenue from a clean dashboard — no extra packages.',
+            'title' => 'You stay in control',
+            'body' => 'Nothing is automated behind your back. You confirm each order after the chat, exactly the way you work today.',
         ],
         [
-            'title' => 'Bilingual & RTL',
-            'body' => 'Arabic and English are first-class: every screen flips direction and translates cleanly.',
+            'title' => 'Built for Oman',
+            'body' => 'Rial pricing, Arabic-first, and a phone-friendly form your customers will understand instantly.',
         ],
         [
-            'title' => 'Light & dark',
-            'body' => 'A refined design system with a persistent light/dark theme your customers will love.',
+            'title' => 'Arabic & English, light & dark',
+            'body' => 'Every screen flips direction cleanly and remembers your theme — for you and your customers.',
         ],
     ],
 
     // ---- How it works -------------------------------------------------
     'how_eyebrow' => 'How it works',
-    'how_title' => 'From visitor to subscriber in three steps',
+    'how_title' => 'From a WhatsApp chat to a tracked order in three steps',
     'how_steps' => [
         [
-            'title' => 'Pick a plan',
-            'body' => 'Customers compare plans and choose the one that fits — free, trial, or paid.',
+            'title' => 'Share your link',
+            'body' => 'Agree the order in the chat, then send your order link. The customer enters their name, phone and what they want.',
         ],
         [
-            'title' => 'Check out securely',
-            'body' => 'They pay through a hosted gateway; the subscription activates the moment payment settles.',
+            'title' => 'Get the order + a code',
+            'body' => 'The order lands in your dashboard instantly, and the customer receives a tracker code to follow it.',
         ],
         [
-            'title' => 'Use their dashboard',
-            'body' => 'Subscribers manage their plan, usage and billing from a dashboard built for them.',
+            'title' => 'Manage until delivered',
+            'body' => 'Update the status as you go. The customer always sees where their order stands — no extra messages needed.',
         ],
     ],
 
     // ---- Pricing teaser ----------------------------------------------
     'pricing_eyebrow' => 'Pricing',
-    'pricing_title' => 'Simple, transparent plans',
-    'pricing_subtitle' => 'Start free and upgrade when you grow. Every plan includes the full platform.',
+    'pricing_title' => 'One fair price, no surprises',
+    'pricing_subtitle' => 'Start free with 10 orders a day. Upgrade only when your orders grow.',
     'pricing_cta' => 'See full pricing',
     'per_month' => '/mo',
-    'most_popular' => 'Most popular',
+    'most_popular' => 'Best for growing shops',
     'choose_plan' => 'Choose plan',
 
     // ---- FAQ ----------------------------------------------------------
@@ -84,45 +98,45 @@ return [
     'faq_title' => 'Questions, answered',
     'faq_items' => [
         [
-            'q' => 'Can I try it before paying?',
-            'a' => 'Yes. The Free plan is available forever, and Pro comes with a 14-day trial — no card needed to start.',
+            'q' => 'Do my customers need an app or account?',
+            'a' => 'No. They just open your link, fill a short form, and get a tracker code. Everything works in the browser.',
         ],
         [
-            'q' => 'Can I change plans later?',
-            'a' => 'Anytime. Upgrades take effect immediately and your billing term is extended fairly from where you are.',
+            'q' => 'How is this different from an online store?',
+            'a' => 'There is no catalog, inventory or checkout to manage. You still sell over WhatsApp — this just captures and tracks the orders cleanly.',
         ],
         [
-            'q' => 'What happens if I cancel?',
-            'a' => 'You keep access until the end of your paid term, then the subscription simply expires. No surprises.',
+            'q' => 'What happens on the free plan?',
+            'a' => 'You can receive up to 10 orders per day, forever. When you need more, the Pro plan handles up to 1,000 orders a month.',
         ],
         [
-            'q' => 'Do you support Arabic?',
-            'a' => 'Fully. The entire product is bilingual and right-to-left aware, from the landing page to the admin panel.',
+            'q' => 'Is it in Arabic?',
+            'a' => 'Fully. The whole product is Arabic-first and right-to-left aware, and your order link works in Arabic and English.',
         ],
     ],
 
     // ---- Final CTA ----------------------------------------------------
-    'cta_title' => 'Ready to launch your SaaS?',
-    'cta_subtitle' => 'Create an account and explore the dashboard in under a minute.',
-    'cta_button' => 'Get started free',
+    'cta_title' => 'Ready to tidy up your orders?',
+    'cta_subtitle' => 'Create your free account and share your first order link in under a minute.',
+    'cta_button' => 'Start free',
 
     // ---- Footer -------------------------------------------------------
-    'footer_tagline' => 'The bilingual SaaS starter kit for Laravel.',
+    'footer_tagline' => 'The simplest way for Omani merchants to receive and track manual orders.',
     'footer_product' => 'Product',
     'footer_company' => 'Company',
     'footer_rights' => 'All rights reserved.',
 
     // ---- Auth side panel ---------------------------------------------
-    'auth_panel_title' => 'Everything you need to run a subscription business.',
+    'auth_panel_title' => 'Give every order a home — and a tracker code.',
     'auth_panel_points' => [
-        'Plans, trials and payments that just work',
-        'A dashboard your customers will actually enjoy',
-        'Bilingual, light & dark, ready to extend',
+        'One link to receive orders from WhatsApp & Instagram',
+        'A dashboard that shows every order at a glance',
+        'A tracker code your customers can follow themselves',
     ],
     'login_title' => 'Welcome back',
-    'login_subtitle' => 'Sign in to your account to continue.',
-    'register_title' => 'Create your account',
-    'register_subtitle' => 'Start free — no credit card required.',
+    'login_subtitle' => 'Sign in to manage your orders.',
+    'register_title' => 'Create your merchant account',
+    'register_subtitle' => 'Start free — 10 orders a day, no credit card.',
     'no_account' => 'New here?',
     'create_account' => 'Create an account',
     'have_account' => 'Already have an account?',

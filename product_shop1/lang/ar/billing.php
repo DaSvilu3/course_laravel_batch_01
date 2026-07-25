@@ -37,6 +37,16 @@ return [
     'started' => 'تاريخ البدء',
     'features' => 'المميزات',
 
+    // أسطر مزايا بطاقة الأسعار (تُقرأ من مزايا الباقة).
+    'feat_daily' => ':count طلب يوميًا',
+    'feat_daily_unlimited' => 'طلبات غير محدودة يوميًا',
+    'feat_monthly' => 'حتى :count طلب شهريًا',
+    'feat_monthly_unlimited' => 'طلبات غير محدودة شهريًا',
+    'feat_tracking' => 'كود تتبّع لكل طلب',
+    'feat_support_community' => 'دعم المجتمع',
+    'feat_support_email' => 'دعم عبر البريد',
+    'feat_support_priority' => 'دعم ذو أولوية',
+
     'subscribed' => 'تم اشتراكك بنجاح. أهلًا بك!',
     'canceled_notice' => 'تم إلغاء اشتراكك ولن يتم تجديده.',
     'subscription_required' => 'هذه المنطقة تتطلب اشتراكًا نشطًا.',

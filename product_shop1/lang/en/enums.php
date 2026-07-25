@@ -37,6 +37,15 @@ return [
         'cancelled' => 'Cancelled',
     ],
 
+    'merchant_order_status' => [
+        'new' => 'New',
+        'confirmed' => 'Confirmed',
+        'preparing' => 'Preparing',
+        'out_for_delivery' => 'Out for delivery',
+        'delivered' => 'Delivered',
+        'cancelled' => 'Cancelled',
+    ],
+
     'billing_interval' => [
         'month' => 'Monthly',
         'year' => 'Yearly',

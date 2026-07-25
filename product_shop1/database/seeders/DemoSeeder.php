@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Enums\MerchantOrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Enums\UserRole;
+use App\Models\MerchantOrder;
 use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\Subscription;
@@ -20,17 +22,17 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $paid = Plan::whereIn('slug', ['pro', 'business'])->get()->keyBy('slug');
-        $pro = $paid->get('pro');
-        $business = $paid->get('business');
+        $pro = Plan::where('slug', 'pro')->first();
 
-        if (! $pro || ! $business) {
+        if (! $pro) {
             return; // plans not seeded yet
         }
 
         // Start clean so re-seeding stays idempotent.
         Payment::where('payable_type', Subscription::class)->delete();
         Subscription::query()->delete();
+
+        $this->seedMerchantOrders();
 
         // ---- The demo customer gets a healthy, paid Pro subscription -------
         $demo = User::where('email', 'user@example.com')->first();
@@ -50,20 +52,49 @@ class DemoSeeder extends Seeder
             ->where('email', '!=', 'user@example.com')
             ->get();
 
-        $plans = [$pro, $business];
-
         foreach ($customers->values() as $i => $customer) {
-            $plan = $plans[$i % 2];
-
             // Rotate through the interesting lifecycle states.
             match ($i % 5) {
-                0 => $this->activePaid($customer, $plan),
+                0 => $this->activePaid($customer, $pro),
                 1 => $this->trialing($customer, $pro),
-                2 => $this->activePaid($customer, $plan),
-                3 => $this->gracePeriod($customer, $plan),
-                default => $this->expired($customer, $plan),
+                2 => $this->activePaid($customer, $pro),
+                3 => $this->gracePeriod($customer, $pro),
+                default => $this->expired($customer, $pro),
             };
         }
+    }
+
+    /**
+     * Fill the demo merchant's dashboard with a believable spread of orders
+     * across every status, plus a few for today so the quota gauge moves.
+     */
+    private function seedMerchantOrders(): void
+    {
+        $demo = User::where('email', 'user@example.com')->first();
+        if (! $demo) {
+            return;
+        }
+
+        MerchantOrder::where('user_id', $demo->id)->delete();
+
+        // A spread over the past few weeks across every status.
+        foreach (MerchantOrderStatus::cases() as $status) {
+            MerchantOrder::factory()
+                ->count(3)
+                ->status($status)
+                ->for($demo)
+                ->create([
+                    'created_at' => now()->subDays(rand(1, 25)),
+                    'updated_at' => now()->subDays(rand(0, 3)),
+                ]);
+        }
+
+        // A couple that came in today, so "today's orders" is non-zero.
+        MerchantOrder::factory()
+            ->count(2)
+            ->status(MerchantOrderStatus::New)
+            ->for($demo)
+            ->create(['created_at' => now()->subHours(rand(1, 6))]);
     }
 
     private function activePaid(User $user, Plan $plan): void

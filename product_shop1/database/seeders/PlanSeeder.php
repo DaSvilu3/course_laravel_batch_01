@@ -15,41 +15,42 @@ class PlanSeeder extends Seeder
                 'slug' => 'free',
                 'name_ar' => 'مجاني',
                 'name_en' => 'Free',
-                'description_ar' => 'للبداية والتجربة.',
-                'description_en' => 'To get started and explore.',
+                'description_ar' => 'للبداية واستقبال أول طلباتك.',
+                'description_en' => 'To get started and receive your first orders.',
                 'price' => 0,
                 'interval' => BillingInterval::Month,
-                'features' => ['max_projects' => 1, 'api_access' => false, 'support' => 'community'],
+                'features' => [
+                    'daily_orders' => 10,
+                    'monthly_orders' => -1,
+                    'tracking' => true,
+                    'support' => 'community',
+                ],
                 'sort_order' => 0,
             ],
             [
                 'slug' => 'pro',
                 'name_ar' => 'برو',
                 'name_en' => 'Pro',
-                'description_ar' => 'للأفراد والمشاريع الصغيرة.',
-                'description_en' => 'For individuals and small projects.',
+                'description_ar' => 'للمحلات النشطة التي تنمو طلباتها.',
+                'description_en' => 'For active shops with growing orders.',
                 'price' => 15_000, // 15.000 OMR / month
                 'interval' => BillingInterval::Month,
-                'trial_days' => 14,
-                'features' => ['max_projects' => 20, 'api_access' => true, 'support' => 'email'],
+                'features' => [
+                    'daily_orders' => -1,
+                    'monthly_orders' => 1000,
+                    'tracking' => true,
+                    'support' => 'email',
+                ],
                 'is_featured' => true,
                 'sort_order' => 1,
-            ],
-            [
-                'slug' => 'business',
-                'name_ar' => 'الأعمال',
-                'name_en' => 'Business',
-                'description_ar' => 'للشركات والفرق الكبيرة.',
-                'description_en' => 'For companies and larger teams.',
-                'price' => 40_000, // 40.000 OMR / month
-                'interval' => BillingInterval::Month,
-                'features' => ['max_projects' => -1, 'api_access' => true, 'support' => 'priority'],
-                'sort_order' => 2,
             ],
         ];
 
         foreach ($plans as $plan) {
             Plan::updateOrCreate(['slug' => $plan['slug']], $plan + ['is_active' => true]);
         }
+
+        // Retire any plan from the old skeleton so only the two tiers show.
+        Plan::whereNotIn('slug', ['free', 'pro'])->update(['is_active' => false]);
     }
 }

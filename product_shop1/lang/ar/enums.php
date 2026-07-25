@@ -37,6 +37,15 @@ return [
         'cancelled' => 'ملغي',
     ],
 
+    'merchant_order_status' => [
+        'new' => 'جديد',
+        'confirmed' => 'مؤكّد',
+        'preparing' => 'قيد التجهيز',
+        'out_for_delivery' => 'قيد التوصيل',
+        'delivered' => 'تم التسليم',
+        'cancelled' => 'ملغى',
+    ],
+
     'billing_interval' => [
         'month' => 'شهري',
         'year' => 'سنوي',

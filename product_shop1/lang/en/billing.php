@@ -37,6 +37,16 @@ return [
     'started' => 'Started',
     'features' => 'Features',
 
+    // Pricing card feature lines (driven by the plan's features).
+    'feat_daily' => ':count orders per day',
+    'feat_daily_unlimited' => 'Unlimited orders per day',
+    'feat_monthly' => 'Up to :count orders per month',
+    'feat_monthly_unlimited' => 'Unlimited orders per month',
+    'feat_tracking' => 'Tracker code for every order',
+    'feat_support_community' => 'Community support',
+    'feat_support_email' => 'Email support',
+    'feat_support_priority' => 'Priority support',
+
     'subscribed' => 'You are subscribed. Welcome aboard!',
     'canceled_notice' => 'Your subscription is cancelled and will not renew.',
     'subscription_required' => 'This area needs an active subscription.',

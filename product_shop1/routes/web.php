@@ -3,13 +3,16 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Billing;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Intake\PublicOrderController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\MerchantOrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Payments\FakeGatewayController;
 use App\Http\Controllers\Payments\PaymentCallbackController;
 use App\Http\Controllers\Payments\ThawaniWebhookController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Shop;
+use App\Http\Controllers\TrackingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,6 +36,22 @@ Route::get('products/{product}', [Shop\ProductController::class, 'show'])->name(
 // Public SaaS pricing page.
 Route::get('plans', [Shop\PlanController::class, 'index'])->name('plans.index');
 
+/*
+|--------------------------------------------------------------------------
+| Public order intake + tracking (the core product)
+|--------------------------------------------------------------------------
+|
+| A merchant shares /o/{store_slug}; the customer fills the form and gets a
+| tracker code they can look up at /track — no account needed on either side.
+|
+*/
+
+Route::get('track/{code?}', [TrackingController::class, 'show'])->name('track');
+
+Route::get('o/{merchant:store_slug}', [PublicOrderController::class, 'show'])->name('intake.show');
+Route::post('o/{merchant:store_slug}', [PublicOrderController::class, 'store'])->name('intake.store');
+Route::get('o/{merchant:store_slug}/received', [PublicOrderController::class, 'received'])->name('intake.received');
+
 // The cart lives in the session, so guests can fill it before logging in.
 Route::controller(Shop\CartController::class)->prefix('cart')->name('cart.')->group(function () {
     Route::get('/', 'index')->name('index');
@@ -50,6 +69,12 @@ Route::controller(Shop\CartController::class)->prefix('cart')->name('cart.')->gr
 
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    // The merchant's own order management (distinct from the retired shop cart).
+    Route::get('merchant/analytics', [MerchantOrderController::class, 'analytics'])->name('merchant.analytics');
+    Route::get('merchant/orders', [MerchantOrderController::class, 'index'])->name('merchant.orders.index');
+    Route::get('merchant/orders/{merchantOrder}', [MerchantOrderController::class, 'show'])->name('merchant.orders.show');
+    Route::patch('merchant/orders/{merchantOrder}', [MerchantOrderController::class, 'update'])->name('merchant.orders.update');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');

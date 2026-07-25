@@ -6,7 +6,7 @@
         </div>
     </x-slot>
 
-    <div class="grid items-start gap-6 md:grid-cols-3">
+    <div class="mx-auto grid max-w-4xl items-stretch gap-6 sm:grid-cols-2">
         @foreach ($plans as $plan)
             @php $isCurrent = $current && $current->plan_id === $plan->id; @endphp
 
@@ -41,18 +41,22 @@
                     <p class="mt-1 text-xs font-medium text-brand-600 dark:text-brand-400">{{ __('billing.trial_days', ['days' => $plan->trial_days]) }}</p>
                 @endif
 
-                @if (! empty($plan->features))
-                    <ul class="mt-5 space-y-2.5 text-sm text-ink-700 dark:text-ink-300">
-                        @foreach ($plan->features as $key => $value)
-                            <li class="flex items-center gap-2.5">
+                <ul class="mt-5 space-y-2.5 text-sm text-ink-700 dark:text-ink-300">
+                    @foreach ($plan->featureLines() as $line)
+                        <li class="flex items-center gap-2.5 {{ $line['on'] ? '' : 'text-ink-400 dark:text-ink-500' }}">
+                            @if ($line['on'])
                                 <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300">
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 </span>
-                                <span>{{ $key }}: <strong class="text-ink-900 dark:text-white">{{ $value === -1 ? '∞' : (is_bool($value) ? ($value ? '✓' : '✗') : $value) }}</strong></span>
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
+                            @else
+                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink-100 text-ink-400 dark:bg-ink-800 dark:text-ink-500">
+                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
+                                </span>
+                            @endif
+                            <span>{{ $line['label'] }}</span>
+                        </li>
+                    @endforeach
+                </ul>
 
                 <div class="mt-auto pt-6">
                     @if ($isCurrent)

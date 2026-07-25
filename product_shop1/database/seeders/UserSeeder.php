@@ -16,9 +16,12 @@ class UserSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name' => 'مدير النظام',
+                'store_name' => 'طلباتي',
+                'store_slug' => 'talabati',
                 'password' => Hash::make('password'),
                 'role' => UserRole::Admin,
                 'phone' => '90000000',
+                'whatsapp' => '90000000',
                 'is_active' => true,
                 'email_verified_at' => now(),
             ],
@@ -27,10 +30,13 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'user@example.com'],
             [
-                'name' => 'عميل تجريبي',
+                'name' => 'متجر تجريبي',
+                'store_name' => 'متجر النور',
+                'store_slug' => 'al-noor',
                 'password' => Hash::make('password'),
                 'role' => UserRole::User,
                 'phone' => '91111111',
+                'whatsapp' => '91111111',
                 'is_active' => true,
                 'email_verified_at' => now(),
             ],

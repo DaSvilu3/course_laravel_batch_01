@@ -1,0 +1,43 @@
+<?php
+
+return [
+    'currency_symbol' => 'ر.ع.',
+    'forbidden' => 'ليس لديك صلاحية للوصول إلى هذه الصفحة.',
+
+    'home' => 'الرئيسية',
+    'dashboard' => 'لوحة التحكم',
+    'admin_panel' => 'لوحة الإدارة',
+    'view_site' => 'عرض الموقع',
+    'language' => 'اللغة',
+    'login' => 'تسجيل الدخول',
+    'register' => 'إنشاء حساب',
+    'logout' => 'تسجيل الخروج',
+    'profile' => 'الملف الشخصي',
+
+    'save' => 'حفظ',
+    'cancel' => 'إلغاء',
+    'delete' => 'حذف',
+    'edit' => 'تعديل',
+    'create' => 'إضافة',
+    'update' => 'تحديث',
+    'back' => 'رجوع',
+    'search' => 'بحث',
+    'filter' => 'تصفية',
+    'reset' => 'إعادة تعيين',
+    'actions' => 'إجراءات',
+    'status' => 'الحالة',
+    'date' => 'التاريخ',
+    'yes' => 'نعم',
+    'no' => 'لا',
+    'active' => 'مفعّل',
+    'inactive' => 'غير مفعّل',
+    'optional' => 'اختياري',
+    'all' => 'الكل',
+    'none' => '—',
+    'confirm_delete' => 'هل أنت متأكد من الحذف؟',
+    'no_results' => 'لا توجد نتائج.',
+
+    'welcome_back' => 'مرحبًا بعودتك، :name',
+    'toggle_theme' => 'التبديل بين الوضع الفاتح والداكن',
+    'all_systems_operational' => 'جميع الأنظمة تعمل',
+];

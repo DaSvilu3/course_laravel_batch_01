@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Arabic renders right-to-left. The <html dir> attribute does most of the
+ * work; these rules fix the few things Tailwind cannot flip on its own.
+ */
+@layer base {
+    [dir='rtl'] .rtl-flip {
+        transform: scaleX(-1);
+    }
+
+    /* Alpine hides these until it initialises (theme toggle icons). */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Colour changes (theme switch) glide instead of snapping. */
+    body {
+        @apply bg-ink-50 text-ink-800 transition-colors duration-300;
+    }
+
+    .dark body {
+        @apply bg-ink-950 text-ink-100;
+    }
+
+    /* Nicer selection + focus rings that read well in both themes. */
+    ::selection {
+        @apply bg-brand-500/25;
+    }
+}
+
+@layer components {
+    /* ---- Buttons ---------------------------------------------------- */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-ink-950;
+    }
+
+    .btn-primary {
+        @apply btn bg-brand-600 text-white shadow-soft hover:bg-brand-500 hover:shadow-glow active:translate-y-px;
+    }
+
+    .btn-secondary {
+        @apply btn border border-ink-200 bg-white text-ink-700 shadow-soft hover:border-ink-300 hover:bg-ink-50 active:translate-y-px dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200 dark:hover:border-ink-600 dark:hover:bg-ink-800;
+    }
+
+    .btn-ghost {
+        @apply btn text-ink-600 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800;
+    }
+
+    .btn-danger {
+        @apply btn bg-rose-600 text-white shadow-soft hover:bg-rose-500 active:translate-y-px focus-visible:ring-rose-500/60;
+    }
+
+    /* ---- Surfaces --------------------------------------------------- */
+    .card {
+        @apply rounded-2xl border border-ink-200/80 bg-white shadow-soft transition-colors duration-300 dark:border-ink-800 dark:bg-ink-900;
+    }
+
+    .card-hover {
+        @apply card transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift dark:hover:border-brand-800;
+    }
+
+    /* Frosted-glass panel used by the sticky nav. */
+    .glass {
+        @apply border-b border-ink-200/70 bg-white/75 backdrop-blur-xl dark:border-ink-800/70 dark:bg-ink-950/70;
+    }
+
+    /* ---- Forms ------------------------------------------------------ */
+    .form-input-field {
+        @apply w-full rounded-xl border-ink-200 bg-white text-ink-800 shadow-sm transition focus:border-brand-500 focus:ring-brand-500 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-100 dark:placeholder-ink-500 dark:focus:border-brand-500;
+    }
+
+    /* ---- Badges ----------------------------------------------------- */
+    .badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ring-black/5 dark:ring-white/10;
+    }
+
+    /* ---- Tables ----------------------------------------------------- */
+    .table-th {
+        @apply px-4 py-3 text-start text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400;
+    }
+
+    .table-td {
+        @apply whitespace-nowrap px-4 py-3 text-sm text-ink-700 dark:text-ink-300;
+    }
+
+    /* ---- Utility bits ---------------------------------------------- */
+    /* Gradient text for hero headlines. */
+    .text-gradient {
+        @apply bg-gradient-to-br from-brand-600 via-brand-500 to-violet-500 bg-clip-text text-transparent dark:from-brand-300 dark:via-brand-400 dark:to-violet-400;
+    }
+
+    /* Small pill used for eyebrow labels above headings. */
+    .eyebrow {
+        @apply inline-flex items-center gap-2 rounded-full border border-ink-200/80 bg-white/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-ink-500 dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-400;
+    }
+}

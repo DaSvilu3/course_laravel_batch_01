@@ -68,6 +68,11 @@
     font-size:clamp(.95rem,1.7vw,1.15rem); font-weight:650;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
+  .bar-brand{ min-width:0; }
+  .bar-title-sm{
+    font-size:clamp(.8rem,1.4vw,.98rem); font-weight:650; color:var(--ink-2);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
   .tc{ font-family:var(--mono); font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate; }
 
   .clock{
@@ -262,7 +267,18 @@
     background:conic-gradient(var(--steel) 0deg, var(--steel-soft) 0deg);
     box-shadow:inset 0 0 0 12px var(--surface), var(--shadow);
   }
-  .break-mark{ font-family:var(--mono); font-size:clamp(1.7rem,6vw,2.6rem); font-weight:600; color:var(--steel); letter-spacing:-.02em; direction:ltr; }
+  .break-mark{ font-family:var(--mono); font-size:clamp(1.7rem,6vw,2.6rem); font-weight:600; color:var(--steel); letter-spacing:-.02em; direction:ltr; display:grid; place-items:center; }
+  .break-mark svg{ width:clamp(2.8rem,9vw,3.8rem); height:auto; display:block; }
+
+  /* gift slide */
+  .gift-hero{ display:grid; place-items:center; padding:.2rem 0; }
+  .gift-hero svg{ width:clamp(8rem,26vw,12rem); height:auto; display:block; filter:drop-shadow(0 18px 30px rgba(23,61,75,.18)); }
+  .gift-card{ position:relative; }
+  .gift-num{
+    position:absolute; top:.85rem; inset-inline-end:.9rem;
+    font-family:var(--mono); font-size:.9rem; font-weight:700;
+    color:var(--muted);
+  }
 
   /* cover */
   .cover-hero{
@@ -359,7 +375,7 @@
   /* rundown overview */
   .rows{ display:flex; flex-direction:column; border:1px solid var(--rule); border-radius:9px; overflow:hidden; background:var(--surface); }
   .row{
-    display:grid; grid-template-columns:7.5rem 1fr 4rem; align-items:center; gap:.8rem;
+    display:grid; grid-template-columns:3rem 1fr; align-items:center; gap:.8rem;
     padding:.6rem .9rem; border:0; background:transparent; cursor:pointer;
     text-align:start; font-family:var(--arabic); color:var(--ink); font-size:.95rem;
     border-bottom:1px solid var(--rule);
@@ -390,36 +406,27 @@
   @media (max-width: 720px){
     .bar-slot.hide-sm{ display:none; }
     .strip-legend{ display:none; }
-    .row{ grid-template-columns:6rem 1fr; }
-    .row .mins{ display:none; }
+    .row{ grid-template-columns:2.5rem 1fr; }
   }
 </style>
 
-<div class="app" id="app" dir="rtl" data-state="idle" data-running="false">
+<div class="app" id="app" dir="rtl">
 
-  <!-- ================= timecode bar ================= -->
+  <!-- ================= top bar ================= -->
   <header class="bar">
-    <div class="bar-slot bar-clock">
-      <div class="clock-label">
-        <i class="pulse"></i>
-        <span class="eyebrow" id="clockLabel">متبقٍ في الفقرة</span>
-      </div>
-      <div class="clock" id="clock">--:--</div>
+    <div class="bar-slot bar-brand hide-sm">
+      <span class="eyebrow">ورشة لارافيل · دفعة 01</span>
+      <div class="bar-title-sm">بناء منتج رقمي مع قاعدة بيانات</div>
     </div>
 
     <div class="bar-slot bar-now">
-      <span class="eyebrow"><span class="tc" id="curWindow">0:00 – 0:10</span> · فقرة <span class="tc" id="curIndex">1/11</span></span>
+      <span class="eyebrow">فقرة <span class="tc" id="curIndex">1 / 12</span></span>
       <div class="bar-title" id="curTitle">ترحيب وتمهيد</div>
     </div>
 
-    <div class="bar-slot hide-sm">
-      <span class="eyebrow">الانحراف التراكمي</span>
-      <div class="drift" id="drift" data-sign="zero">في الوقت تمامًا</div>
-    </div>
-
-    <div class="bar-slot bar-actions">
-      <button class="btn btn-primary" id="btnPlay">ابدأ <kbd>space</kbd></button>
-      <button class="btn" id="btnReset" title="إعادة ضبط مؤقت الفقرة">تصفير <kbd>R</kbd></button>
+    <div class="bar-slot bar-actions" style="display: none">
+      <button class="btn" id="btnPrev" title="الفقرة التالية">التالي <kbd>←</kbd></button>
+      <button class="btn" id="btnNext" title="الفقرة السابقة">السابق <kbd>→</kbd></button>
       <button class="btn" id="btnPrompts">الأوامر <kbd>P</kbd></button>
       <button class="btn" id="btnOverview">الأجندة <kbd>O</kbd></button>
     </div>
@@ -429,11 +436,11 @@
   <main class="stage" id="stage">
 
     <!-- 0 · cover -->
-    <section class="slide" data-mins="0" data-from="—" data-to="—" data-title="الغلاف" data-kind="cover">
+    <section class="slide" data-title="الغلاف" data-kind="cover">
       <div class="wrap">
         <div class="head">
           <div class="head-meta">
-            <span class="stamp">ONLINE · 3H</span>
+            <span class="stamp">ONLINE</span>
             <span class="stamp stamp-plain">دفعة 01</span>
           </div>
           <h1>ورشة بناء منتج رقمي<br>مع قاعدة بيانات</h1>
@@ -516,8 +523,8 @@
         <div class="cover-strip">
           <div class="cover-cell"><b>25</b><span>مقعدًا</span></div>
           <div class="cover-cell"><b>35 ر.ع</b><span>التكلفة</span></div>
-          <div class="cover-cell"><b>3:00</b><span>مدة الورشة</span></div>
           <div class="cover-cell"><b>أونلاين</b><span>آلية الورشة</span></div>
+          <div class="cover-cell"><b>3</b><span>هدايا للمشاركين</span></div>
         </div>
 
         <div class="grid g3">
@@ -534,12 +541,12 @@
     </section>
 
     <!-- 1 -->
-    <section class="slide" data-mins="10" data-from="0:00" data-to="0:10" data-title="ترحيب وتمهيد">
+    <section class="slide" data-title="ترحيب وتمهيد">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">0:00 – 0:10</span><span class="stamp p1">الجزء الأول · التأسيس</span></div>
+          <div class="head-meta"><span class="stamp p1">الجزء الأول · التأسيس</span></div>
           <h2>ترحيب وتمهيد</h2>
-          <p class="lede">نتفق على الوجهة قبل أن نكتب أول سطر: ما الذي سيخرج به كل واحد منكم بعد ثلاث ساعات بالضبط.</p>
+          <p class="lede">نتفق على الوجهة قبل أن نكتب أول سطر: ما الذي سيخرج به كل واحد منكم بنهاية الورشة بالضبط.</p>
         </div>
 
         <div class="grid g2">
@@ -567,19 +574,17 @@
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>3د</b> ترحيب وتعارف سريع</span>
-          <span class="split"><b>4د</b> عرض حي للمنتج النهائي المنشور</span>
-          <span class="split"><b>3د</b> شرح قواعد الورشة والأجندة</span>
+          <span class="cue-label">ملاحظة المدرب</span>
+          <span class="cue-note">ابدأ بترحيب وتعارف سريع، ثم اعرض المنتج النهائي المنشور حيًّا، واختم بقواعد الورشة والأجندة.</span>
         </div>
       </div>
     </section>
 
     <!-- 2 -->
-    <section class="slide" data-mins="15" data-from="0:10" data-to="0:25" data-title="الذكاء الاصطناعي كشريك تطوير">
+    <section class="slide" data-title="الذكاء الاصطناعي كشريك تطوير">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">0:10 – 0:25</span><span class="stamp p1">الجزء الأول · التأسيس</span></div>
+          <div class="head-meta"><span class="stamp p1">الجزء الأول · التأسيس</span></div>
           <h2>الذكاء الاصطناعي كشريك تطوير</h2>
           <p class="lede">الفرق بين من يحصل على كود صحيح ومن يحصل على فوضى ليس الأداة — بل بنية الأمر الذي يكتبه.</p>
         </div>
@@ -618,19 +623,17 @@
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>4د</b> الأدوات ومتى نستخدم كلًا منها</span>
-          <span class="split"><b>6د</b> الأجزاء الخمسة مع مثال حي</span>
-          <span class="split"><b>5د</b> تجربة مباشرة: نحسّن أمرًا ضعيفًا معًا</span>
+          <span class="cue-label">ملاحظة المدرب</span>
+          <span class="cue-note">اعرض الأدوات ومتى نستخدم كلًا منها، ثم الأجزاء الخمسة بمثال حي، واختم بتجربة مباشرة نحسّن فيها أمرًا ضعيفًا معًا.</span>
         </div>
       </div>
     </section>
 
     <!-- 3 -->
-    <section class="slide" data-mins="20" data-from="0:25" data-to="0:45" data-title="أساسيات Laravel بسرعة">
+    <section class="slide" data-title="أساسيات Laravel بسرعة">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">0:25 – 0:45</span><span class="stamp p1">الجزء الأول · التأسيس</span></div>
+          <div class="head-meta"><span class="stamp p1">الجزء الأول · التأسيس</span></div>
           <h2>أساسيات Laravel بسرعة</h2>
           <p class="lede">لن نشرح الإطار كله — سنشرح الطريق الذي يسلكه الطلب من رابط في المتصفح إلى صف في قاعدة البيانات.</p>
         </div>
@@ -668,31 +671,27 @@ php artisan serve</pre>
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>5د</b> دورة حياة الطلب على السبورة</span>
-          <span class="split"><b>6د</b> جولة في مجلدات المشروع</span>
-          <span class="split"><b>6د</b> أول Route وControllerعمليًا</span>
-          <span class="split"><b>3د</b> Migration وربط قاعدة البيانات</span>
-          <span class="cue-note">تحذير: لا تدخل في شرح Middleware أو Service Container — تجاوز الوقت يبدأ من هنا.</span>
+          <span class="cue-label">ملاحظة المدرب</span>
+          <span class="cue-note">ابقَ على المسار العملي: دورة حياة الطلب، جولة المجلدات، أول Route وController، ثم Migration وربط قاعدة البيانات. لا تدخل في شرح Middleware أو Service Container.</span>
         </div>
       </div>
     </section>
 
     <!-- 4 break -->
-    <section class="slide" data-mins="5" data-from="0:45" data-to="0:50" data-title="استراحة" data-kind="break">
+    <section class="slide" data-title="استراحة" data-kind="break">
       <div class="wrap">
-        <div class="break-ring"><div class="break-mark">05:00</div></div>
+        <div class="break-ring"><div class="break-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9h2.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2v2M11.5 2v2M14 2v2"/></svg></div></div>
         <h2>استراحة</h2>
-        <p class="lede" style="text-align:center">عد بعد خمس دقائق — سنبدأ مباشرة ببناء قاعدة البيانات.</p>
+        <p class="lede" style="text-align:center">استراحة قصيرة — سنبدأ مباشرة ببناء قاعدة البيانات.</p>
         <span class="cue-label">اتركوا نافذة الطرفية مفتوحة على المشروع</span>
       </div>
     </section>
 
     <!-- 5 -->
-    <section class="slide" data-mins="35" data-from="0:50" data-to="1:25" data-title="بناء المنتج (1) — البيانات">
+    <section class="slide" data-title="بناء المنتج (1) — البيانات">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">0:50 – 1:25</span><span class="stamp p2">الجزء الثاني · البناء العملي</span></div>
+          <div class="head-meta"><span class="stamp p2">الجزء الثاني · البناء العملي</span></div>
           <h2>بناء المنتج (1) — البيانات</h2>
           <p class="lede">قاعدة البيانات هي العمود الفقري. خطأ هنا يكلفك إعادة بناء كل ما فوقه — لذا نصممها بعناية قبل أن نكتب واجهة واحدة.</p>
         </div>
@@ -729,30 +728,26 @@ order_items   id, order_id, product_id, qty, unit_price</pre>
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>8د</b> تصميم المخطط ومراجعته</span>
-          <span class="split"><b>7د</b> Migrations والعلاقات</span>
-          <span class="split"><b>6د</b> Models وSeeders</span>
-          <span class="split"><b>14د</b> CRUD المنتجات والعملاء</span>
+          <span class="cue-label">ملاحظة المدرب</span>
           <span class="cue-note">افتح شاشة «مكتبة الأوامر» — الأوامر من ١ إلى ٥ تخص هذه الفقرة.</span>
         </div>
       </div>
     </section>
 
     <!-- 6 break -->
-    <section class="slide" data-mins="5" data-from="1:25" data-to="1:30" data-title="استراحة" data-kind="break">
+    <section class="slide" data-title="استراحة" data-kind="break">
       <div class="wrap">
-        <div class="break-ring"><div class="break-mark">05:00</div></div>
+        <div class="break-ring"><div class="break-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9h2.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2v2M11.5 2v2M14 2v2"/></svg></div></div>
         <h2>استراحة</h2>
         <p class="lede" style="text-align:center">شغّل <code class="inl">php artisan serve</code> وتأكد أن صفحة المنتجات تفتح قبل أن نكمل.</p>
       </div>
     </section>
 
     <!-- 7 -->
-    <section class="slide" data-mins="40" data-from="1:30" data-to="2:10" data-title="بناء المنتج (2) — الواجهات والتحقق">
+    <section class="slide" data-title="بناء المنتج (2) — الواجهات والتحقق">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">1:30 – 2:10</span><span class="stamp p2">الجزء الثاني · البناء العملي</span></div>
+          <div class="head-meta"><span class="stamp p2">الجزء الثاني · البناء العملي</span></div>
           <h2>بناء المنتج (2) — الواجهات والتحقق</h2>
           <p class="lede">الآن نجعل المنتج قابلًا للاستخدام من إنسان حقيقي: شاشات عربية واضحة، بيانات لا تُقبل إلا صحيحة، وأخطاء تشرح نفسها.</p>
         </div>
@@ -774,22 +769,17 @@ order_items   id, order_id, product_id, qty, unit_price</pre>
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>10د</b> التخطيط العام والواجهة العربية RTL</span>
-          <span class="split"><b>12د</b> شاشة إنشاء الطلب بعدة عناصر</span>
-          <span class="split"><b>8د</b> التحقق والرسائل</span>
-          <span class="split"><b>6د</b> البحث والفلترة والترقيم</span>
-          <span class="split"><b>4د</b> اللوحة الرئيسية</span>
+          <span class="cue-label">ملاحظة المدرب</span>
           <span class="cue-note">الأوامر من ٦ إلى ٩ في مكتبة الأوامر تخص هذه الفقرة.</span>
         </div>
       </div>
     </section>
 
     <!-- 8 -->
-    <section class="slide" data-mins="25" data-from="2:10" data-to="2:35" data-title="الرفع على السيرفر">
+    <section class="slide" data-title="الرفع على السيرفر">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">2:10 – 2:35</span><span class="stamp p3">الجزء الثالث · الإطلاق</span></div>
+          <div class="head-meta"><span class="stamp p3">الجزء الثالث · الإطلاق</span></div>
           <h2>الرفع على السيرفر</h2>
           <p class="lede">المشروع الذي يعمل على جهازك فقط ليس منتجًا. في الدقائق القادمة يصبح لمشروعك رابط يفتحه أي أحد.</p>
         </div>
@@ -817,21 +807,17 @@ chmod -R 775 storage bootstrap/cache</pre>
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>5د</b> خيارات الاستضافة والفرق بينها</span>
-          <span class="split"><b>7د</b> تجهيز المشروع وقائمة ما قبل النشر</span>
-          <span class="split"><b>9د</b> النشر الفعلي أمامكم</span>
-          <span class="split"><b>4د</b> الدومين وSSL</span>
-          <span class="cue-note">جهّز حساب الاستضافة ومفاتيح الدخول قبل الورشة — لا تضيّع الوقت في التسجيل.</span>
+          <span class="cue-label">ملاحظة المدرب</span>
+          <span class="cue-note">جهّز حساب الاستضافة ومفاتيح الدخول قبل الورشة حتى لا نتوقف عند خطوات التسجيل.</span>
         </div>
       </div>
     </section>
 
     <!-- 9 -->
-    <section class="slide" data-mins="15" data-from="2:35" data-to="2:50" data-title="تجربة حية وأسئلة تقنية">
+    <section class="slide" data-title="تجربة حية وأسئلة تقنية">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">2:35 – 2:50</span><span class="stamp p3">الجزء الثالث · الإطلاق</span></div>
+          <div class="head-meta"><span class="stamp p3">الجزء الثالث · الإطلاق</span></div>
           <h2>تجربة حية وأسئلة تقنية</h2>
           <p class="lede">افتحوا الرابط الآن من هواتفكم، أنشئوا طلبًا حقيقيًا، وأخبروني بأول شيء يتعطل.</p>
         </div>
@@ -848,19 +834,17 @@ chmod -R 775 storage bootstrap/cache</pre>
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>5د</b> تجربة جماعية للرابط</span>
-          <span class="split"><b>10د</b> حل المشاكل وأسئلة مفتوحة</span>
-          <span class="cue-note">إن تجاوزنا الوقت هنا، انقل الأسئلة المتبقية إلى مجموعة المتابعة وأغلق في موعده.</span>
+          <span class="cue-label">ملاحظة المدرب</span>
+          <span class="cue-note">ابدأ بتجربة جماعية للرابط، ثم افتح باب حل المشاكل والأسئلة. ما يتبقى من أسئلة انقله إلى مجموعة المتابعة.</span>
         </div>
       </div>
     </section>
 
     <!-- 10 -->
-    <section class="slide" data-mins="10" data-from="2:50" data-to="3:00" data-title="الختام وخارطة الطريق">
+    <section class="slide" data-title="الختام وخارطة الطريق">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">2:50 – 3:00</span><span class="stamp p3">الجزء الثالث · الإطلاق</span></div>
+          <div class="head-meta"><span class="stamp p3">الجزء الثالث · الإطلاق</span></div>
           <h2>الختام وخارطة الطريق</h2>
           <p class="lede">ما بنيناه اليوم هو نقطة البداية. هذه خطة الثلاثين يومًا القادمة لتحوّلها إلى مهارة تُوظَّف.</p>
         </div>
@@ -891,19 +875,17 @@ chmod -R 775 storage bootstrap/cache</pre>
         </div>
 
         <div class="cue">
-          <span class="cue-label">تقسيم الوقت</span>
-          <span class="split"><b>5د</b> خارطة الطريق</span>
-          <span class="split"><b>3د</b> المصادر والمتابعة</span>
-          <span class="split"><b>2د</b> شكر وإغلاق</span>
+          <span class="cue-label">ملاحظة المدرب</span>
+          <span class="cue-note">اعرض خارطة الطريق، ثم المصادر والمتابعة، واختم بشكر المشاركين قبل الانتقال إلى صندوق الهدايا.</span>
         </div>
       </div>
     </section>
 
     <!-- 11 · prompts intro -->
-    <section class="slide" data-mins="0" data-from="مرجع" data-to="—" data-title="مكتبة الأوامر" data-kind="ref">
+    <section class="slide" data-title="مكتبة الأوامر" data-kind="ref">
       <div class="wrap">
         <div class="head">
-          <div class="head-meta"><span class="stamp">مرجع دائم</span><span class="stamp stamp-plain">بلا مؤقت</span></div>
+          <div class="head-meta"><span class="stamp">مرجع دائم</span></div>
           <h2>مكتبة الأوامر — ما بعد الهيكل</h2>
           <p class="lede">الهيكل هو أسهل جزء؛ الذكاء الاصطناعي ينتجه في دقيقة. المهارة الحقيقية تبدأ بعده: كيف تحوّل هيكلًا فارغًا إلى منتج يتحمّل مستخدمًا حقيقيًا.</p>
         </div>
@@ -933,23 +915,80 @@ chmod -R 775 storage bootstrap/cache</pre>
           <div class="help">
             <span><kbd>←</kbd> التالي</span>
             <span><kbd>→</kbd> السابق</span>
-            <span><kbd>space</kbd> تشغيل/إيقاف المؤقت</span>
-            <span><kbd>R</kbd> تصفير الفقرة</span>
             <span><kbd>P</kbd> الأوامر</span>
             <span><kbd>O</kbd> الأجندة</span>
+            <span><kbd>F</kbd> ملء الشاشة</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · gift box -->
+    <section class="slide" data-title="صندوق الهدايا" data-kind="gift">
+      <div class="wrap">
+        <div class="head">
+          <div class="head-meta"><span class="stamp p3">هدية الختام</span><span class="stamp stamp-plain">للمشاركين</span></div>
+          <h2>صندوق هدايا المشاركين</h2>
+          <p class="lede">شكرًا لحضوركم حتى النهاية — إليكم ثلاث هدايا تكمل رحلتكم بعد الورشة.</p>
+        </div>
+
+        <div class="gift-hero" role="img" aria-label="صندوق هدايا">
+          <svg viewBox="0 0 220 190" xmlns="http://www.w3.org/2000/svg" dir="ltr">
+            <defs>
+              <linearGradient id="giftLid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2C6E85"/><stop offset="1" stop-color="#20566A"/>
+              </linearGradient>
+              <linearGradient id="giftBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#DEEAEF"/><stop offset="1" stop-color="#C7DAE1"/>
+              </linearGradient>
+            </defs>
+            <!-- box body -->
+            <rect x="40" y="78" width="140" height="96" rx="8" fill="url(#giftBody)" stroke="#20566A" stroke-opacity=".35"/>
+            <!-- vertical ribbon on body -->
+            <rect x="98" y="78" width="24" height="96" fill="#C4772A" opacity=".9"/>
+            <!-- lid -->
+            <rect x="30" y="56" width="160" height="30" rx="7" fill="url(#giftLid)"/>
+            <rect x="98" y="56" width="24" height="30" fill="#C4772A"/>
+            <!-- bow -->
+            <path d="M110 56 C 96 30, 60 30, 74 52 C 84 66, 104 58, 110 56 Z" fill="#D98F4E"/>
+            <path d="M110 56 C 124 30, 160 30, 146 52 C 136 66, 116 58, 110 56 Z" fill="#D98F4E"/>
+            <circle cx="110" cy="55" r="8" fill="#C4772A"/>
+            <!-- sparkles -->
+            <path d="M28 40 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2 z" fill="#1E7A5B" opacity=".8"/>
+            <path d="M192 30 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5 -4.5 -4.5 -1.5 4.5 -1.5 z" fill="#20566A" opacity=".7"/>
+          </svg>
+        </div>
+
+        <div class="grid g3 gifts">
+          <div class="card card-mark gift-card">
+            <span class="gift-num">١</span>
+            <h3><i class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></i>كتيب دليل المبتدئين</h3>
+            <p>دليل المبتدئين في عالم البرمجة — نقطة انطلاقك الأولى في المفاهيم الأساسية.</p>
+          </div>
+          <div class="card card-mark gift-card">
+            <span class="gift-num">٢</span>
+            <h3><i class="ic amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M2 8v8l10 5 10-5V8"/><path d="M12 13v8"/></svg></i>دليل لارافيل</h3>
+            <p>مرجع عملي مركّز يرافقك في كل مشروع لارافيل قادم بعد الورشة.</p>
+          </div>
+          <div class="card card-mark gift-card">
+            <span class="gift-num">٣</span>
+            <h3><i class="ic ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg></i>اشتراك up-skill.om</h3>
+            <p>اشتراك في منصة <code class="inl">up-skill.om</code> لمدة ثلاثة أشهر كاملة — تعلّم متواصل بعد الورشة.</p>
+          </div>
+        </div>
+
+        <div class="cue">
+          <span class="cue-label">كيف تستلم هديتك</span>
+          <span class="cue-note">ستصلكم روابط التحميل وكود التفعيل في مجموعة الدفعة بعد انتهاء الورشة مباشرة.</span>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ================= rundown strip ================= -->
+  <!-- ================= progress strip ================= -->
   <footer class="strip">
     <div class="strip-inner" id="strip"></div>
-    <div class="strip-legend">
-      <span class="tc" id="elapsedTotal">00:00 / 3:00:00</span>
-    </div>
   </footer>
 </div>
 
@@ -958,7 +997,7 @@ chmod -R 775 storage bootstrap/cache</pre>
   <div class="ov-head">
     <div>
       <div class="eyebrow">أجندة الورشة</div>
-      <h3 style="margin-top:.2rem">3 ساعات · 11 فقرة</h3>
+      <h3 style="margin-top:.2rem">محتوى الورشة</h3>
     </div>
     <button class="btn" data-close="ovAgenda">إغلاق <kbd>esc</kbd></button>
   </div>
@@ -1013,7 +1052,7 @@ chmod -R 775 storage bootstrap/cache</pre>
         <div class="stage-head">
           <span class="num">STAGE 01</span>
           <h3>البيانات — الأساس الذي يُبنى عليه كل شيء</h3>
-          <span class="when">فقرة 0:50 – 1:25</span>
+          <span class="when">الجزء الثاني · البناء العملي</span>
         </div>
 
         <div class="pcard">
@@ -1101,7 +1140,7 @@ Order::with('items.product','customer')->first()
         <div class="stage-head">
           <span class="num">STAGE 02</span>
           <h3>الواجهة والتحقق — ما يراه المستخدم</h3>
-          <span class="when">فقرة 1:30 – 2:10</span>
+          <span class="when">الجزء الثاني · البناء العملي</span>
         </div>
 
         <div class="pcard">
@@ -1182,7 +1221,7 @@ Order::with('items.product','customer')->first()
         <div class="stage-head">
           <span class="num">STAGE 03</span>
           <h3>قبل النشر — من مشروع إلى منتج</h3>
-          <span class="when">فقرة 2:10 – 2:35</span>
+          <span class="when">الجزء الثالث · الإطلاق</span>
         </div>
 
         <div class="pcard">
@@ -1278,72 +1317,45 @@ Order::with('items.product','customer')->first()
 (function(){
   "use strict";
 
-  const app     = document.getElementById('app');
   const slides  = Array.from(document.querySelectorAll('.slide'));
-  const clockEl = document.getElementById('clock');
-  const clockLb = document.getElementById('clockLabel');
   const titleEl = document.getElementById('curTitle');
-  const winEl   = document.getElementById('curWindow');
   const idxEl   = document.getElementById('curIndex');
-  const driftEl = document.getElementById('drift');
   const stripEl = document.getElementById('strip');
-  const totalEl = document.getElementById('elapsedTotal');
   const rowsEl  = document.getElementById('agendaRows');
   const toastEl = document.getElementById('toast');
-  const btnPlay = document.getElementById('btnPlay');
 
   const segs = slides.map((s, i) => ({
     i,
-    mins:  parseInt(s.dataset.mins || '0', 10),
-    from:  s.dataset.from  || '—',
-    to:    s.dataset.to    || '—',
     title: s.dataset.title || ('فقرة ' + (i + 1)),
     kind:  s.dataset.kind  || 'talk'
   }));
-  const TIMED = segs.filter(s => s.mins > 0);
-  const PLANNED_TOTAL = TIMED.reduce((a, s) => a + s.mins, 0) * 60;
 
-  const STORE = 'laravel-workshop-deck-v1';
-  let state = {
-    cur: 0,
-    running: false,
-    spent: segs.map(() => 0),   // seconds actually spent per segment
-    lastTick: null
-  };
+  const STORE = 'laravel-workshop-deck-v2';
+  let state = { cur: 0 };
 
   try {
     const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
-    if (saved && Array.isArray(saved.spent) && saved.spent.length === segs.length) {
-      state.cur   = Math.min(Math.max(saved.cur | 0, 0), segs.length - 1);
-      state.spent = saved.spent.map(n => Number(n) || 0);
+    if (saved && Number.isInteger(saved.cur)) {
+      state.cur = Math.min(Math.max(saved.cur, 0), segs.length - 1);
     }
   } catch (e) { /* ignore corrupt state */ }
 
   const save = () => {
-    try { localStorage.setItem(STORE, JSON.stringify({ cur: state.cur, spent: state.spent })); }
+    try { localStorage.setItem(STORE, JSON.stringify({ cur: state.cur })); }
     catch (e) { /* storage unavailable */ }
   };
 
-  /* ---------- formatting ---------- */
-  const pad = n => String(n).padStart(2, '0');
-  function mmss(sec){
-    const s = Math.max(0, Math.round(sec));
-    return pad(Math.floor(s / 60)) + ':' + pad(s % 60);
-  }
-  function hmmss(sec){
-    const s = Math.max(0, Math.round(sec));
-    return Math.floor(s / 3600) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60);
-  }
+  const pad2 = n => String(n).padStart(2, '0');
 
-  /* ---------- build rundown strip + agenda ---------- */
+  /* ---------- build progress strip + agenda ---------- */
   segs.forEach(seg => {
     const b = document.createElement('button');
     b.className = 'blk';
     b.type = 'button';
-    b.style.flexGrow = String(seg.mins > 0 ? seg.mins : 3);
-    b.title = seg.title + ' · ' + (seg.mins || '—') + ' د';
+    b.style.flexGrow = '1';
+    b.title = seg.title;
     b.setAttribute('aria-label', 'انتقل إلى ' + seg.title);
-    b.innerHTML = '<i class="fill"></i><span>' + (seg.mins > 0 ? seg.mins : '·') + '</span>';
+    b.innerHTML = '<span>' + (seg.i + 1) + '</span>';
     b.addEventListener('click', () => go(seg.i));
     stripEl.appendChild(b);
 
@@ -1351,9 +1363,8 @@ Order::with('items.product','customer')->first()
     r.className = 'row';
     r.type = 'button';
     r.innerHTML =
-      '<span class="tc">' + seg.from + (seg.mins > 0 ? ' – ' + seg.to : '') + '</span>' +
-      '<span>' + seg.title + '</span>' +
-      '<span class="mins">' + (seg.mins > 0 ? seg.mins + ' د' : '—') + '</span>';
+      '<span class="tc">' + pad2(seg.i + 1) + '</span>' +
+      '<span>' + seg.title + '</span>';
     r.addEventListener('click', () => { go(seg.i); closeAll(); });
     rowsEl.appendChild(r);
   });
@@ -1362,125 +1373,29 @@ Order::with('items.product','customer')->first()
 
   /* ---------- navigation ---------- */
   function go(n){
-    const next = Math.min(Math.max(n, 0), segs.length - 1);
-    if (next === state.cur) return;
-    state.cur = next;
-    state.lastTick = performance.now();
-    // auto-run timed segments, idle on reference slides
-    state.running = segs[next].mins > 0;
-    slides.forEach((s, i) => s.dataset.active = String(i === next));
+    const target = Math.min(Math.max(n, 0), segs.length - 1);
+    state.cur = target;
+    slides.forEach((s, i) => s.dataset.active = String(i === target));
     render();
     save();
   }
   const next = () => go(state.cur + 1);
   const prev = () => go(state.cur - 1);
 
-  function toggle(){
-    if (segs[state.cur].mins === 0) return;
-    state.running = !state.running;
-    state.lastTick = performance.now();
-    render();
-  }
-  function resetSeg(){
-    state.spent[state.cur] = 0;
-    state.lastTick = performance.now();
-    render();
-    save();
-  }
-
-  /* ---------- drift ---------- */
-  function driftSeconds(){
-    let d = 0;
-    for (let i = 0; i < state.cur; i++) {
-      if (segs[i].mins > 0) d += state.spent[i] - segs[i].mins * 60;
-    }
-    const cur = segs[state.cur];
-    if (cur.mins > 0) d += Math.max(0, state.spent[state.cur] - cur.mins * 60);
-    return d;
-  }
-
   /* ---------- render ---------- */
   function render(){
-    const seg     = segs[state.cur];
-    const planned = seg.mins * 60;
-    const spent   = state.spent[state.cur];
-    const left    = planned - spent;
-
+    const seg = segs[state.cur];
     titleEl.textContent = seg.title;
-    winEl.textContent   = seg.mins > 0 ? seg.from + ' – ' + seg.to : seg.from;
-    idxEl.textContent   = (state.cur + 1) + '/' + segs.length;
-
-    if (seg.mins === 0) {
-      app.dataset.state = 'idle';
-      clockEl.textContent = '--:--';
-      clockLb.textContent = 'شريحة مرجعية — بلا مؤقت';
-    } else if (left < 0) {
-      app.dataset.state = 'over';
-      clockEl.textContent = '+' + mmss(-left);
-      clockLb.textContent = 'تجاوزت الوقت';
-    } else {
-      app.dataset.state = (left <= Math.max(60, planned * 0.2)) ? 'warn' : 'ok';
-      clockEl.textContent = mmss(left);
-      clockLb.textContent = state.running ? 'متبقٍ في الفقرة' : 'متوقف — متبقٍ';
-    }
-    app.dataset.running = String(state.running);
-    btnPlay.firstChild.nodeValue = state.running ? 'إيقاف ' : 'ابدأ ';
-
-    // break slide: mirror the live countdown into the ring + dial
-    if (seg.kind === 'break') {
-      const slide = slides[state.cur];
-      const ring = slide.querySelector('.break-ring');
-      const mark = slide.querySelector('.break-mark');
-      if (mark) mark.textContent = left < 0 ? '+' + mmss(-left) : mmss(left);
-      if (ring) {
-        const frac = planned ? Math.min(1, Math.max(0, spent / planned)) : 0;
-        const col = left < 0 ? 'var(--over)' : 'var(--steel)';
-        ring.style.background =
-          'conic-gradient(' + col + ' ' + (frac * 360) + 'deg, var(--steel-soft) 0deg)';
-      }
-    }
-
-    const d = driftSeconds();
-    if (Math.abs(d) < 30) {
-      driftEl.dataset.sign = 'zero';
-      driftEl.textContent = 'في الوقت تمامًا';
-    } else if (d > 0) {
-      driftEl.dataset.sign = 'behind';
-      driftEl.textContent = 'متأخر بـ ' + mmss(d);
-    } else {
-      driftEl.dataset.sign = 'ahead';
-      driftEl.textContent = 'متقدم بـ ' + mmss(-d);
-    }
-
-    let done = 0;
-    state.spent.forEach((v, i) => { if (segs[i].mins > 0) done += v; });
-    totalEl.textContent = hmmss(done) + ' / ' + hmmss(PLANNED_TOTAL);
+    idxEl.textContent   = (state.cur + 1) + ' / ' + segs.length;
 
     blocks.forEach((b, i) => {
       b.dataset.cur  = String(i === state.cur);
       b.dataset.done = String(i < state.cur);
-      const p = segs[i].mins > 0 ? Math.min(1, state.spent[i] / (segs[i].mins * 60)) : 0;
-      b.querySelector('.fill').style.width = (p * 100) + '%';
     });
     rows.forEach((r, i) => {
       r.dataset.cur  = String(i === state.cur);
       r.dataset.done = String(i < state.cur);
     });
-  }
-
-  /* ---------- tick ---------- */
-  state.lastTick = performance.now();
-  function tick(now){
-    if (state.running && segs[state.cur].mins > 0) {
-      const dt = (now - (state.lastTick || now)) / 1000;
-      if (dt > 0 && dt < 5) state.spent[state.cur] += dt;
-      state.lastTick = now;
-      render();
-      if (Math.floor(state.spent[state.cur]) % 10 === 0) save();
-    } else {
-      state.lastTick = now;
-    }
-    requestAnimationFrame(tick);
   }
 
   /* ---------- overlays ---------- */
@@ -1500,8 +1415,8 @@ Order::with('items.product','customer')->first()
   document.getElementById('btnPrompts').addEventListener('click',  () => openOv(ovPrompts));
   document.getElementById('btnPromptsBig').addEventListener('click', () => openOv(ovPrompts));
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeAll));
-  btnPlay.addEventListener('click', toggle);
-  document.getElementById('btnReset').addEventListener('click', resetSeg);
+  document.getElementById('btnNext').addEventListener('click', prev);
+  document.getElementById('btnPrev').addEventListener('click', next);
 
   /* ---------- copy ---------- */
   let toastTimer = null;
@@ -1551,10 +1466,6 @@ Order::with('items.product','customer')->first()
         if (!overlayOpen) { e.preventDefault(); next(); } break;
       case 'ArrowRight': case 'PageUp':
         if (!overlayOpen) { e.preventDefault(); prev(); } break;
-      case ' ': case 'Spacebar':
-        if (!overlayOpen) { e.preventDefault(); toggle(); } break;
-      case 'r': case 'R':
-        if (!overlayOpen) resetSeg(); break;
       case 'p': case 'P':
         e.preventDefault();
         ovPrompts.dataset.open === 'true' ? closeAll() : openOv(ovPrompts); break;
@@ -1572,6 +1483,5 @@ Order::with('items.product','customer')->first()
   /* ---------- boot ---------- */
   slides.forEach((s, i) => s.dataset.active = String(i === state.cur));
   render();
-  requestAnimationFrame(tick);
 })();
 </script>

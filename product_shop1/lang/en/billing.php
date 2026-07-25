@@ -1,0 +1,63 @@
+<?php
+
+return [
+
+    'pricing' => 'Pricing',
+    'plans' => 'Plans',
+    'choose_plan' => 'Choose the plan that fits you',
+    'pricing_subtitle' => 'Upgrade, downgrade or cancel any time.',
+    'free' => 'Free',
+    'per_month' => '/ month',
+    'per_year' => '/ year',
+    'trial_days' => ':days-day free trial',
+    'featured' => 'Most popular',
+    'current_plan' => 'Your current plan',
+    'subscribe' => 'Subscribe',
+    'get_started' => 'Get started',
+    'switch_to' => 'Switch to this plan',
+
+    'billing' => 'Billing',
+    'my_subscription' => 'My subscription',
+    'no_subscription' => 'You have no active subscription.',
+    'no_subscription_hint' => 'Pick a plan to unlock the subscriber features.',
+    'view_plans' => 'View plans',
+    'status' => 'Status',
+    'renews_on' => 'Renews on',
+    'ends_on' => 'Access ends on',
+    'trial_until' => 'Trial until',
+    'wont_renew' => 'Will not renew — access until the end of the term.',
+    'renew' => 'Renew now',
+    'cancel' => 'Cancel subscription',
+    'cancel_confirm' => 'Cancel your subscription? You keep access until the term ends.',
+    'resubscribe' => 'Resubscribe',
+    'change_plan' => 'Change plan',
+    'history' => 'Subscription history',
+    'plan' => 'Plan',
+    'price' => 'Price',
+    'started' => 'Started',
+    'features' => 'Features',
+
+    'subscribed' => 'You are subscribed. Welcome aboard!',
+    'canceled_notice' => 'Your subscription is cancelled and will not renew.',
+    'subscription_required' => 'This area needs an active subscription.',
+
+    // Dashboard
+    'plan_includes' => 'Your plan includes',
+    'unlimited' => 'Unlimited',
+    'projects' => 'projects',
+    'api_access' => 'API access',
+    'support' => 'support',
+    'manage_billing' => 'Manage billing',
+    'upgrade' => 'Upgrade plan',
+    'recent_invoices' => 'Recent invoices',
+    'no_invoices' => 'No payments yet.',
+    'total_paid' => 'Total paid',
+    'reference' => 'Reference',
+    'active_since' => 'Member since',
+    'complete_profile' => 'Complete your profile',
+    'complete_profile_hint' => 'Add your details to get the most out of your account.',
+
+    // Subscriber-only demo page.
+    'members_title' => 'Subscribers area',
+    'members_body' => 'This page is protected by the "subscribed" middleware. Only users with an active plan (and admins) can see it.',
+];

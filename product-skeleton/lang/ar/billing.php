@@ -41,6 +41,22 @@ return [
     'canceled_notice' => 'تم إلغاء اشتراكك ولن يتم تجديده.',
     'subscription_required' => 'هذه المنطقة تتطلب اشتراكًا نشطًا.',
 
+    // Dashboard
+    'plan_includes' => 'تشمل باقتك',
+    'unlimited' => 'غير محدود',
+    'projects' => 'مشاريع',
+    'api_access' => 'وصول API',
+    'support' => 'دعم',
+    'manage_billing' => 'إدارة الفوترة',
+    'upgrade' => 'ترقية الباقة',
+    'recent_invoices' => 'أحدث الفواتير',
+    'no_invoices' => 'لا مدفوعات بعد.',
+    'total_paid' => 'إجمالي المدفوع',
+    'reference' => 'المرجع',
+    'active_since' => 'عضو منذ',
+    'complete_profile' => 'أكمل ملفك الشخصي',
+    'complete_profile_hint' => 'أضف بياناتك للاستفادة القصوى من حسابك.',
+
     'members_title' => 'منطقة المشتركين',
     'members_body' => 'هذه الصفحة محميّة بواسطة middleware باسم "subscribed"، ولا يراها إلا المشتركون بباقة نشطة (والمدراء).',
 ];

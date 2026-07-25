@@ -1,7 +1,3 @@
-@php
-    $cart = app(App\Support\Cart::class);
-@endphp
-
 <nav x-data="{ open: false }" class="glass sticky top-0 z-40">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
@@ -16,34 +12,33 @@
                 </a>
 
                 <div class="hidden gap-1 sm:flex">
-                    <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
-                        {{ __('shop.services') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                        {{ __('shop.products') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.*')">
-                        {{ __('billing.pricing') }}
-                    </x-nav-link>
+                    @auth
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('common.dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
+                            {{ __('billing.billing') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.*')">
+                            {{ __('landing.nav_pricing') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('home').'#features'">
+                            {{ __('landing.nav_features') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.*')">
+                            {{ __('landing.nav_pricing') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('privacy')" :active="request()->routeIs('privacy')">
+                            {{ __('landing.nav_privacy') }}
+                        </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
             <div class="hidden items-center gap-3 sm:flex">
                 <x-locale-switcher />
                 <x-theme-toggle />
-
-                <a href="{{ route('cart.index') }}"
-                   class="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-ink-200 bg-white text-ink-600 transition hover:border-ink-300 hover:text-ink-900 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300 dark:hover:border-ink-600 dark:hover:text-white"
-                   aria-label="{{ __('shop.cart') }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 3h1.6l1.7 12.4a1.5 1.5 0 0 0 1.5 1.3h9.3a1.5 1.5 0 0 0 1.5-1.2L21 7H6M9 20.5h.01M17 20.5h.01" />
-                    </svg>
-                    @if ($cart->quantity() > 0)
-                        <span class="absolute -top-1.5 -end-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand-600 px-1 text-xs font-semibold text-white ring-2 ring-white dark:ring-ink-950">
-                            {{ $cart->quantity() }}
-                        </span>
-                    @endif
-                </a>
 
                 @auth
                     <x-dropdown align="end" width="48">
@@ -66,8 +61,6 @@
                                 </x-dropdown-link>
                             @endif
                             <x-dropdown-link :href="route('dashboard')">{{ __('common.dashboard') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('orders.index')">{{ __('shop.my_orders') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('bookings.index')">{{ __('shop.my_bookings') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('billing.index')">{{ __('billing.billing') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('profile.edit')">{{ __('common.profile') }}</x-dropdown-link>
 
@@ -81,8 +74,8 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                    <a href="{{ route('login') }}" class="btn-ghost text-sm">{{ __('common.login') }}</a>
-                    <a href="{{ route('register') }}" class="btn-primary text-sm">{{ __('common.register') }}</a>
+                    <a href="{{ route('login') }}" class="btn-ghost text-sm">{{ __('landing.sign_in') }}</a>
+                    <a href="{{ route('register') }}" class="btn-primary text-sm">{{ __('landing.get_started') }}</a>
                 @endauth
             </div>
 
@@ -100,12 +93,15 @@
 
     <div :class="{'block': open, 'hidden': ! open}" class="hidden border-t border-ink-200/70 sm:hidden dark:border-ink-800/70">
         <div class="space-y-1 px-3 pb-3 pt-2">
-            <x-responsive-nav-link :href="route('services.index')">{{ __('shop.services') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('products.index')">{{ __('shop.products') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('plans.index')">{{ __('billing.pricing') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('cart.index')">
-                {{ __('shop.cart') }} ({{ $cart->quantity() }})
-            </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('common.dashboard') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">{{ __('billing.billing') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('plans.index')">{{ __('landing.nav_pricing') }}</x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('home').'#features'">{{ __('landing.nav_features') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('plans.index')">{{ __('landing.nav_pricing') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('privacy')">{{ __('landing.nav_privacy') }}</x-responsive-nav-link>
+            @endauth
         </div>
 
         <div class="border-t border-ink-200/70 px-3 pb-3 pt-4 dark:border-ink-800/70">
@@ -118,8 +114,6 @@
                 @if (Auth::user()->isAdmin())
                     <x-responsive-nav-link :href="route('admin.dashboard')">{{ __('common.admin_panel') }}</x-responsive-nav-link>
                 @endif
-                <x-responsive-nav-link :href="route('dashboard')">{{ __('common.dashboard') }}</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('orders.index')">{{ __('shop.my_orders') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('profile.edit')">{{ __('common.profile') }}</x-responsive-nav-link>
 
                 <form method="POST" action="{{ route('logout') }}">
@@ -130,8 +124,8 @@
                     </x-responsive-nav-link>
                 </form>
             @else
-                <x-responsive-nav-link :href="route('login')">{{ __('common.login') }}</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('register')">{{ __('common.register') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('login')">{{ __('landing.sign_in') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('register')">{{ __('landing.get_started') }}</x-responsive-nav-link>
             @endauth
 
             <div class="px-1 pt-3">

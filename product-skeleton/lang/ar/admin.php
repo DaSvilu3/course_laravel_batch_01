@@ -24,6 +24,20 @@ return [
     'recent_orders' => 'أحدث الطلبات',
     'upcoming_bookings' => 'الحجوزات القادمة',
 
+    // SaaS dashboard
+    'mrr' => 'الإيراد الشهري',
+    'mrr_hint' => 'الإيراد المتكرر شهريًا',
+    'active_subscriptions' => 'الاشتراكات النشطة',
+    'trialing' => 'قيد التجربة',
+    'total_revenue' => 'إجمالي الإيراد',
+    'plan_breakdown' => 'المشتركون حسب الباقة',
+    'recent_subscriptions' => 'أحدث الاشتراكات',
+    'recent_payments' => 'أحدث المدفوعات',
+    'no_subscriptions' => 'لا اشتراكات بعد.',
+    'no_payments' => 'لا مدفوعات بعد.',
+    'customer' => 'العميل',
+    'plan' => 'الباقة',
+
     'new_user' => 'مستخدم جديد',
     'new_category' => 'تصنيف جديد',
     'new_service' => 'خدمة جديدة',

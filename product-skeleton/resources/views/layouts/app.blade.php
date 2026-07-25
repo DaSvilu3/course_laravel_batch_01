@@ -45,13 +45,43 @@
             {{ $slot }}
         </main>
 
-        <footer class="mt-16 border-t border-ink-200/70 dark:border-ink-800/70">
-            <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-ink-500 sm:flex-row sm:px-6 lg:px-8 dark:text-ink-400">
-                <p>&copy; {{ date('Y') }} {{ config('app.name') }}</p>
-                <p class="flex items-center gap-1.5">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    {{ __('common.all_systems_operational') }}
-                </p>
+        <footer class="mt-20 border-t border-ink-200/70 dark:border-ink-800/70">
+            <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+                <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+                    <div class="max-w-xs">
+                        <a href="{{ route('home') }}" class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-500 text-sm font-black text-white shadow-glow">
+                                {{ mb_substr(config('app.name'), 0, 1) }}
+                            </span>
+                            <span class="text-lg font-bold tracking-tight text-ink-900 dark:text-white">{{ config('app.name') }}</span>
+                        </a>
+                        <p class="mt-4 text-sm text-ink-500 dark:text-ink-400">{{ __('landing.footer_tagline') }}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-ink-400 dark:text-ink-500">{{ __('landing.footer_product') }}</h3>
+                            <ul class="mt-4 space-y-3 text-sm">
+                                <li><a href="{{ route('home').'#features' }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_features') }}</a></li>
+                                <li><a href="{{ route('plans.index') }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_pricing') }}</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-ink-400 dark:text-ink-500">{{ __('landing.footer_company') }}</h3>
+                            <ul class="mt-4 space-y-3 text-sm">
+                                <li><a href="{{ route('privacy') }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_privacy') }}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-ink-200/70 pt-6 text-sm text-ink-500 sm:flex-row dark:border-ink-800/70 dark:text-ink-400">
+                    <p>&copy; {{ date('Y') }} {{ config('app.name') }} — {{ __('landing.footer_rights') }}</p>
+                    <p class="flex items-center gap-1.5">
+                        <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                        {{ __('common.all_systems_operational') }}
+                    </p>
+                </div>
             </div>
         </footer>
     </body>

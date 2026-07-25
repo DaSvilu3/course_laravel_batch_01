@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Plan;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\User;
@@ -12,15 +13,14 @@ class StorefrontTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_page_lists_featured_items(): void
+    public function test_landing_page_renders_with_plans(): void
     {
-        $service = Service::factory()->featured()->create();
-        $product = Product::factory()->featured()->create();
+        // The home page is the SaaS landing; its pricing section lists plans.
+        $plan = Plan::factory()->create(['is_active' => true, 'name_ar' => 'باقة تجريبية']);
 
         $this->get('/')
             ->assertOk()
-            ->assertSee($service->name_ar)
-            ->assertSee($product->name_ar);
+            ->assertSee('باقة تجريبية');
     }
 
     public function test_service_and_product_listings_render(): void

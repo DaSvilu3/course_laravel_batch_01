@@ -41,6 +41,22 @@ return [
     'canceled_notice' => 'Your subscription is cancelled and will not renew.',
     'subscription_required' => 'This area needs an active subscription.',
 
+    // Dashboard
+    'plan_includes' => 'Your plan includes',
+    'unlimited' => 'Unlimited',
+    'projects' => 'projects',
+    'api_access' => 'API access',
+    'support' => 'support',
+    'manage_billing' => 'Manage billing',
+    'upgrade' => 'Upgrade plan',
+    'recent_invoices' => 'Recent invoices',
+    'no_invoices' => 'No payments yet.',
+    'total_paid' => 'Total paid',
+    'reference' => 'Reference',
+    'active_since' => 'Member since',
+    'complete_profile' => 'Complete your profile',
+    'complete_profile_hint' => 'Add your details to get the most out of your account.',
+
     // Subscriber-only demo page.
     'members_title' => 'Subscribers area',
     'members_body' => 'This page is protected by the "subscribed" middleware. Only users with an active plan (and admins) can see it.',

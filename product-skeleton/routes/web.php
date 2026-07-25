@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Billing;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Payments\FakeGatewayController;
 use App\Http\Controllers\Payments\PaymentCallbackController;
 use App\Http\Controllers\Payments\ThawaniWebhookController;
@@ -13,11 +14,13 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Public storefront
+| Public marketing site (SaaS)
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', Shop\HomeController::class)->name('home');
+// The SaaS landing page is the front door.
+Route::get('/', [PageController::class, 'landing'])->name('home');
+Route::get('privacy', [PageController::class, 'privacy'])->name('privacy');
 
 Route::get('locale/{locale}', LocaleController::class)->name('locale.switch');
 

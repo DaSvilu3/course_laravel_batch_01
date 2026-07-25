@@ -24,6 +24,20 @@ return [
     'recent_orders' => 'Recent orders',
     'upcoming_bookings' => 'Upcoming bookings',
 
+    // SaaS dashboard
+    'mrr' => 'MRR',
+    'mrr_hint' => 'Monthly recurring revenue',
+    'active_subscriptions' => 'Active subscriptions',
+    'trialing' => 'On trial',
+    'total_revenue' => 'Total revenue',
+    'plan_breakdown' => 'Subscribers by plan',
+    'recent_subscriptions' => 'Recent subscriptions',
+    'recent_payments' => 'Recent payments',
+    'no_subscriptions' => 'No subscriptions yet.',
+    'no_payments' => 'No payments yet.',
+    'customer' => 'Customer',
+    'plan' => 'Plan',
+
     'new_user' => 'New user',
     'new_category' => 'New category',
     'new_service' => 'New service',

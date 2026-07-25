@@ -98,6 +98,19 @@ return [
     'copy' => 'نسخ',
     'copied' => 'تم النسخ',
 
+    // ---- Monthly report (exportable) ---------------------------------
+    'monthly_report' => 'التقرير الشهري',
+    'report_subtitle' => 'ملخّص أداء متجرك لهذا الشهر — جاهز للمشاركة.',
+    'export_image' => 'تصدير كصورة',
+    'exporting' => 'جارٍ التصدير…',
+    'report_total_orders' => 'إجمالي الطلبات',
+    'report_completed' => 'الطلبات المكتملة',
+    'report_cancelled' => 'الطلبات الملغاة',
+    'report_value' => 'قيمة الطلبات',
+    'report_top_governorates' => 'أكثر المحافظات طلباً',
+    'report_generated' => 'صُدّر من قيد في :date',
+    'report_tagline' => 'إدارة طلبات المتجر · برابط وكود تتبّع',
+
     // ---- Intake link (dashboard) -------------------------------------
     'intake_link' => 'رابط استقبال الطلبات',
     'intake_link_hint' => 'شارك هذا الرابط مع زبائنك عبر واتساب أو انستجرام.',

@@ -98,6 +98,19 @@ return [
     'copy' => 'Copy',
     'copied' => 'Copied',
 
+    // ---- Monthly report (exportable) ---------------------------------
+    'monthly_report' => 'Monthly report',
+    'report_subtitle' => 'A summary of your store\'s performance this month — ready to share.',
+    'export_image' => 'Export as image',
+    'exporting' => 'Exporting…',
+    'report_total_orders' => 'Total orders',
+    'report_completed' => 'Completed orders',
+    'report_cancelled' => 'Cancelled orders',
+    'report_value' => 'Order value',
+    'report_top_governorates' => 'Top governorates',
+    'report_generated' => 'Exported from Qaid on :date',
+    'report_tagline' => 'Store order management · with a link and a tracker code',
+
     // ---- Intake link (dashboard) -------------------------------------
     'intake_link' => 'Order intake link',
     'intake_link_hint' => 'Share this link with your customers on WhatsApp or Instagram.',

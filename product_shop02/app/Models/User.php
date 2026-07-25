@@ -76,9 +76,11 @@ class User extends Authenticatable
         return $slug;
     }
 
-    public function intakeUrl(): string
+    public function intakeUrl(): ?string
     {
-        return route('intake.show', ['slug' => $this->intake_slug]);
+        return $this->intake_slug
+            ? route('intake.show', ['slug' => $this->intake_slug])
+            : null;
     }
 
     public function whatsappLink(): ?string

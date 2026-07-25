@@ -20,6 +20,7 @@
     </div>
 
     {{-- Intake link card --}}
+    @if ($user->intake_slug)
     <div x-data="{ copied: false, copy(v) { navigator.clipboard.writeText(v); this.copied = true; setTimeout(() => this.copied = false, 1500); } }"
          class="card mt-6 overflow-hidden">
         <div class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
@@ -46,6 +47,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- KPI cards --}}
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -118,4 +120,86 @@
             @endif
         </div>
     </div>
+
+    {{-- ================================================================= --}}
+    {{-- Monthly report — a branded, exportable summary card               --}}
+    {{-- ================================================================= --}}
+    <section class="mt-10" x-data="reportExport">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h2 class="text-xl font-black tracking-tight text-ink-900 dark:text-white">{{ __('shop.monthly_report') }}</h2>
+                <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">{{ __('shop.report_subtitle') }}</p>
+            </div>
+            <button type="button" @click="exportCard" :disabled="busy" class="btn-primary px-5 py-2.5">
+                <svg x-show="!busy" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" /></svg>
+                <span x-show="!busy">{{ __('shop.export_image') }}</span>
+                <span x-show="busy" x-cloak>{{ __('shop.exporting') }}</span>
+            </button>
+        </div>
+
+        {{-- The exportable node. Always light + LTR-neutral so the image reads
+             the same for everyone, independent of the viewer's theme. --}}
+        <div class="mt-5 flex justify-center">
+            <div id="report-card" dir="rtl"
+                 class="w-full max-w-xl overflow-hidden rounded-3xl bg-white shadow-lift ring-1 ring-ink-200">
+                {{-- Brand header --}}
+                <div class="flex items-center justify-between gap-4 bg-gradient-to-br from-brand-600 to-violet-600 px-7 py-6 text-white">
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-xl font-black ring-1 ring-white/25">
+                            {{ mb_substr(config('app.name'), 0, 1) }}
+                        </span>
+                        <div>
+                            <p class="text-lg font-black leading-none">{{ config('app.name') }}</p>
+                            <p class="mt-1 text-xs text-white/80">{{ __('shop.monthly_report') }}</p>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <p class="text-sm font-bold">{{ $user->store_name ?: $user->name }}</p>
+                        <p class="mt-0.5 text-xs text-white/80">{{ $report['month'] }}</p>
+                    </div>
+                </div>
+
+                {{-- Stat grid --}}
+                <div class="grid grid-cols-2 gap-px bg-ink-100">
+                    <div class="bg-white px-7 py-5">
+                        <p class="text-xs font-medium text-ink-500">{{ __('shop.report_total_orders') }}</p>
+                        <p class="mt-1 text-3xl font-black text-ink-900">{{ number_format($report['total']) }}</p>
+                    </div>
+                    <div class="bg-white px-7 py-5">
+                        <p class="text-xs font-medium text-ink-500">{{ __('shop.report_value') }}</p>
+                        <p class="mt-1 text-3xl font-black text-ink-900">{{ \App\Support\Money::format($report['value']) }}</p>
+                    </div>
+                    <div class="bg-white px-7 py-5">
+                        <p class="text-xs font-medium text-ink-500">{{ __('shop.report_completed') }}</p>
+                        <p class="mt-1 text-2xl font-black text-emerald-600">{{ number_format($report['completed']) }}</p>
+                    </div>
+                    <div class="bg-white px-7 py-5">
+                        <p class="text-xs font-medium text-ink-500">{{ __('shop.report_cancelled') }}</p>
+                        <p class="mt-1 text-2xl font-black text-rose-500">{{ number_format($report['cancelled']) }}</p>
+                    </div>
+                </div>
+
+                {{-- Top governorates --}}
+                @if ($report['top_governorates']->isNotEmpty())
+                    <div class="border-t border-ink-100 px-7 py-5">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-ink-500">{{ __('shop.report_top_governorates') }}</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            @foreach ($report['top_governorates'] as $gov)
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700">
+                                    {{ $gov['label'] }}
+                                    <span class="rounded-full bg-brand-600 px-1.5 text-xs font-bold text-white">{{ $gov['count'] }}</span>
+                                </span>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Footer --}}
+                <div class="flex items-center justify-between gap-4 border-t border-ink-100 bg-ink-50 px-7 py-4">
+                    <p class="text-xs font-medium text-ink-500">{{ __('shop.report_tagline') }}</p>
+                    <p class="text-[11px] text-ink-400">{{ __('shop.report_generated', ['date' => now()->translatedFormat('d M Y')]) }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
 </x-app-layout>

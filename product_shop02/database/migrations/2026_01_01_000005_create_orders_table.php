@@ -10,24 +10,45 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('number')->unique();
+
+            // The merchant who owns (received) this order.
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('status')->default('pending')->index();
 
-            // All money columns are integer baisa.
-            $table->unsignedBigInteger('subtotal')->default(0);
-            $table->unsignedBigInteger('discount')->default(0);
-            $table->unsignedBigInteger('tax')->default(0);
-            $table->unsignedBigInteger('total')->default(0);
-            $table->char('currency', 3)->default('OMR');
+            // Public code the customer uses to follow the order (QD-XXXXXX).
+            $table->string('tracker_code')->unique();
 
-            // Snapshot of the buyer at the time of the order.
+            // new / in_progress / completed / cancelled
+            $table->string('status')->default('new')->index();
+
+            // Where the order came from: the public intake form or manual entry.
+            $table->string('source')->default('manual')->index();
+
+            // The customer as captured on the order.
             $table->string('customer_name');
-            $table->string('customer_email');
-            $table->string('customer_phone', 32)->nullable();
-            $table->text('notes')->nullable();
+            $table->string('customer_phone', 32);
 
-            $table->timestamp('paid_at')->nullable();
+            // What was ordered.
+            $table->text('item_description');
+            $table->unsignedInteger('quantity')->default(1);
+
+            // Money is integer baisa. Price is optional (may be agreed later).
+            $table->unsignedBigInteger('price')->nullable();
+            $table->char('currency', 3)->default('OMR');
+            $table->string('payment_method')->nullable(); // cod / transfer
+
+            // Delivery.
+            $table->string('country', 2)->default('OM');
+            $table->string('governorate')->nullable();
+            $table->text('address')->nullable();
+            $table->string('location_note')->nullable();
+
+            $table->text('notes')->nullable();
+            $table->string('attachment_path')->nullable();
+
+            // Status timestamps.
+            $table->timestamp('confirmed_at')->nullable();
+            $table->timestamp('completed_at')->nullable();
+
             $table->timestamps();
         });
     }

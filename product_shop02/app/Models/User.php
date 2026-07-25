@@ -21,6 +21,10 @@ class User extends Authenticatable
         'role',
         'phone',
         'is_active',
+        'store_name',
+        'intake_slug',
+        'whatsapp',
+        'store_logo_path',
     ];
 
     protected $hidden = [
@@ -51,14 +55,37 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class);
     }
 
-    public function bookings(): HasMany
-    {
-        return $this->hasMany(Booking::class);
-    }
-
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class)->latest();
+    }
+
+    // ------------------------------------------------------------------- store
+
+    /** Build (and persist) a unique intake slug from the store name. */
+    public function generateIntakeSlug(): string
+    {
+        $base = \Illuminate\Support\Str::slug($this->store_name ?: $this->name) ?: 'store';
+        $slug = $base;
+        $i = 2;
+
+        while (static::where('intake_slug', $slug)->whereKeyNot($this->id)->exists()) {
+            $slug = $base.'-'.$i++;
+        }
+
+        return $slug;
+    }
+
+    public function intakeUrl(): string
+    {
+        return route('intake.show', ['slug' => $this->intake_slug]);
+    }
+
+    public function whatsappLink(): ?string
+    {
+        $phone = preg_replace('/[^0-9]/', '', (string) $this->whatsapp);
+
+        return $phone ? 'https://wa.me/'.$phone : null;
     }
 
     // ----------------------------------------------------------- subscriptions

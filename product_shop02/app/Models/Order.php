@@ -2,59 +2,78 @@
 
 namespace App\Models;
 
-use App\Contracts\Payable;
 use App\Enums\OrderStatus;
-use App\Services\OrderService;
+use App\Enums\OrderSource;
+use App\Enums\PaymentMethod;
 use App\Support\Money;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
-class Order extends Model implements Payable
+/**
+ * An order a merchant received — either through their public intake form or
+ * entered by hand. Each one carries a public tracker code the customer follows.
+ */
+class Order extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'number',
         'user_id',
+        'tracker_code',
         'status',
-        'subtotal',
-        'discount',
-        'tax',
-        'total',
-        'currency',
+        'source',
         'customer_name',
-        'customer_email',
         'customer_phone',
+        'item_description',
+        'quantity',
+        'price',
+        'currency',
+        'payment_method',
+        'country',
+        'governorate',
+        'address',
+        'location_note',
         'notes',
-        'paid_at',
+        'attachment_path',
+        'confirmed_at',
+        'completed_at',
     ];
 
     protected function casts(): array
     {
         return [
             'status' => OrderStatus::class,
-            'subtotal' => 'integer',
-            'discount' => 'integer',
-            'tax' => 'integer',
-            'total' => 'integer',
-            'paid_at' => 'datetime',
+            'source' => OrderSource::class,
+            'payment_method' => PaymentMethod::class,
+            'quantity' => 'integer',
+            'price' => 'integer',
+            'confirmed_at' => 'datetime',
+            'completed_at' => 'datetime',
         ];
     }
 
     protected static function booted(): void
     {
         static::creating(function (Order $order) {
-            $order->number ??= self::generateNumber();
+            $order->tracker_code ??= self::generateTrackerCode();
         });
     }
 
-    public static function generateNumber(): string
+    public static function generateTrackerCode(): string
     {
-        return 'ORD-'.now()->format('Ymd').'-'.Str::upper(Str::random(6));
+        do {
+            $code = 'QD-'.Str::upper(Str::random(6));
+        } while (self::where('tracker_code', $code)->exists());
+
+        return $code;
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'tracker_code';
     }
 
     // ---------------------------------------------------------------- relations
@@ -64,141 +83,49 @@ class Order extends Model implements Payable
         return $this->belongsTo(User::class);
     }
 
-    public function items(): HasMany
+    /** The merchant who received the order. */
+    public function merchant(): BelongsTo
     {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    public function payments(): MorphMany
-    {
-        return $this->morphMany(Payment::class, 'payable')->latest();
-    }
-
-    public function latestPayment()
-    {
-        return $this->morphOne(Payment::class, 'payable')->latestOfMany();
-    }
-
-    public function bookings(): HasMany
-    {
-        return $this->hasManyThrough(Booking::class, OrderItem::class, 'order_id', 'order_item_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // ---------------------------------------------------------------- helpers
 
-    public function isPaid(): bool
+    public function hasPrice(): bool
     {
-        return $this->status->isPaid();
+        return $this->price !== null && $this->price > 0;
     }
 
-    public function isPayable(): bool
+    public function formattedPrice(): string
     {
-        return in_array($this->status, [OrderStatus::Pending, OrderStatus::AwaitingPayment], true);
+        return $this->hasPrice() ? Money::format($this->price, $this->currency) : '—';
     }
 
-    public function formattedTotal(): string
+    public function whatsappLink(): string
     {
-        return Money::format($this->total, $this->currency);
-    }
+        $phone = preg_replace('/[^0-9]/', '', (string) $this->customer_phone);
 
-    /** Recalculate money columns from the line items. */
-    public function recalculate(): self
-    {
-        $subtotal = (int) $this->items()->sum('total');
-
-        $this->subtotal = $subtotal;
-        $this->total = max(0, $subtotal - $this->discount + $this->tax);
-
-        return $this;
-    }
-
-    // --------------------------------------------------------------- payable
-
-    public function paymentOwner(): User
-    {
-        return $this->user;
-    }
-
-    public function paymentReference(): string
-    {
-        return $this->number;
-    }
-
-    public function paymentTotal(): int
-    {
-        return (int) $this->total;
-    }
-
-    public function paymentCurrency(): string
-    {
-        return $this->currency;
-    }
-
-    public function paymentLineItems(): array
-    {
-        // A discount/tax cannot be sent as a negative line, so when one exists
-        // we collapse the order into a single line for the amount actually due.
-        if ($this->discount > 0 || $this->tax > 0) {
-            return [[
-                'name' => __('payments.order_line', ['number' => $this->number]),
-                'quantity' => 1,
-                'unit_amount' => (int) $this->total,
-            ]];
-        }
-
-        return $this->items->map(fn (OrderItem $item) => [
-            'name' => $item->name,
-            'quantity' => (int) $item->quantity,
-            'unit_amount' => (int) $item->unit_price,
-        ])->values()->all();
-    }
-
-    public function paymentMetadata(): array
-    {
-        return [
-            'type' => 'order',
-            'order_id' => $this->id,
-            'order_number' => $this->number,
-            'customer_email' => (string) $this->customer_email,
-        ];
-    }
-
-    public function paymentReturnUrl(): string
-    {
-        return route('orders.show', $this);
-    }
-
-    public function isSettled(): bool
-    {
-        return $this->isPaid();
-    }
-
-    public function handleCheckoutStarted(Payment $payment): void
-    {
-        $this->update(['status' => OrderStatus::AwaitingPayment]);
-    }
-
-    public function handlePaymentPaid(Payment $payment): void
-    {
-        app(OrderService::class)->markAsPaid($this);
-    }
-
-    public function handlePaymentFailed(Payment $payment): void
-    {
-        // Put the order back so the customer can retry from the order page.
-        if (! $this->isPaid()) {
-            $this->update(['status' => OrderStatus::Pending]);
-        }
+        return 'https://wa.me/'.$phone;
     }
 
     // ------------------------------------------------------------------ scopes
 
-    public function scopePaid($query)
+    public function scopeStatus(Builder $query, ?string $status): Builder
     {
-        return $query->whereIn('status', [
-            OrderStatus::Paid->value,
-            OrderStatus::Processing->value,
-            OrderStatus::Completed->value,
-        ]);
+        return $status ? $query->where('status', $status) : $query;
+    }
+
+    public function scopeSearch(Builder $query, ?string $term): Builder
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($term) {
+            $q->where('tracker_code', 'like', "%{$term}%")
+                ->orWhere('customer_name', 'like', "%{$term}%")
+                ->orWhere('customer_phone', 'like', "%{$term}%")
+                ->orWhere('item_description', 'like', "%{$term}%");
+        });
     }
 }

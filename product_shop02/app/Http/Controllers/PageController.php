@@ -12,9 +12,15 @@ class PageController extends Controller
 {
     public function landing(): View
     {
-        $plans = Plan::active()->ordered()->get();
         return view('landing', [
-            'plans' => $plans,
+            'plans' => Plan::active()->ordered()->get(),
+        ]);
+    }
+
+    public function pricing(): View
+    {
+        return view('pricing', [
+            'plans' => Plan::active()->ordered()->get(),
         ]);
     }
 

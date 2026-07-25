@@ -13,6 +13,11 @@ return [
     'register' => 'إنشاء حساب',
     'logout' => 'تسجيل الخروج',
     'profile' => 'الملف الشخصي',
+    'orders' => 'الطلبات',
+    'track_order' => 'تتبّع طلب',
+    'store_settings' => 'إعدادات المتجر',
+    'copy' => 'نسخ',
+    'copied' => 'تم النسخ',
 
     'save' => 'حفظ',
     'cancel' => 'إلغاء',

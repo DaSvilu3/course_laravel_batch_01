@@ -6,7 +6,18 @@
     @endphp
 
     {{-- ---- Stat tiles ---------------------------------------------------- --}}
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+        <div class="card p-5">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('admin.total_orders') }}</p>
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
+                </span>
+            </div>
+            <p class="mt-3 text-2xl font-black text-ink-900 dark:text-white">{{ number_format($stats['orders']) }}</p>
+            <p class="mt-0.5 text-xs text-ink-400 dark:text-ink-500">{{ __('admin.orders_today') }}: {{ number_format($stats['orders_today']) }}</p>
+        </div>
+
         <div class="card p-5">
             <div class="flex items-center justify-between">
                 <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('admin.mrr') }}</p>

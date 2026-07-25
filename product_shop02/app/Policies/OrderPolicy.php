@@ -7,7 +7,7 @@ use App\Models\User;
 
 /**
  * Admins are handled by the Gate::before() rule in AppServiceProvider,
- * so these methods only describe what a normal customer may do.
+ * so these methods only describe what a merchant may do with their own orders.
  */
 class OrderPolicy
 {
@@ -16,13 +16,13 @@ class OrderPolicy
         return $user->id === $order->user_id;
     }
 
-    public function pay(User $user, Order $order): bool
+    public function update(User $user, Order $order): bool
     {
-        return $user->id === $order->user_id && $order->isPayable();
+        return $user->id === $order->user_id;
     }
 
-    public function cancel(User $user, Order $order): bool
+    public function delete(User $user, Order $order): bool
     {
-        return $user->id === $order->user_id && ! $order->isPaid();
+        return $user->id === $order->user_id;
     }
 }

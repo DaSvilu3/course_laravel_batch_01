@@ -34,6 +34,7 @@ class Order extends Model
         'payment_method',
         'country',
         'governorate',
+        'wilayat',
         'address',
         'location_note',
         'notes',

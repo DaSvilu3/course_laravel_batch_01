@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h1 class="text-2xl font-bold tracking-tight text-ink-900 dark:text-white">
-            {{ __('Profile') }}
+            {{ __('common.store_settings') }}
         </h1>
     </x-slot>
 

@@ -3,23 +3,25 @@
 return [
 
     'user_role' => [
-        'admin' => 'Administrator',
-        'user' => 'Customer',
-    ],
-
-    'catalog_type' => [
-        'service' => 'Service',
-        'product' => 'Product',
+        'admin' => 'Admin',
+        'user' => 'Merchant',
     ],
 
     'order_status' => [
-        'pending' => 'Pending',
-        'awaiting_payment' => 'Awaiting payment',
-        'paid' => 'Paid',
-        'processing' => 'Processing',
+        'new' => 'New',
+        'in_progress' => 'In progress',
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
-        'refunded' => 'Refunded',
+    ],
+
+    'order_source' => [
+        'form' => 'Form',
+        'manual' => 'Manual',
+    ],
+
+    'payment_method' => [
+        'cod' => 'Cash on delivery',
+        'transfer' => 'Bank transfer',
     ],
 
     'payment_status' => [
@@ -30,13 +32,6 @@ return [
         'refunded' => 'Refunded',
     ],
 
-    'booking_status' => [
-        'pending' => 'Pending',
-        'confirmed' => 'Confirmed',
-        'completed' => 'Completed',
-        'cancelled' => 'Cancelled',
-    ],
-
     'billing_interval' => [
         'month' => 'Monthly',
         'year' => 'Yearly',
@@ -44,7 +39,7 @@ return [
 
     'subscription_status' => [
         'pending' => 'Pending',
-        'trialing' => 'Trial',
+        'trialing' => 'Trialing',
         'active' => 'Active',
         'expired' => 'Expired',
         'canceled' => 'Canceled',

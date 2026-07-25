@@ -16,18 +16,24 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('common.dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">
+                            {{ __('shop.orders') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
                             {{ __('billing.billing') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.*')">
+                        <x-nav-link :href="route('pricing')" :active="request()->routeIs('pricing')">
                             {{ __('landing.nav_pricing') }}
                         </x-nav-link>
                     @else
                         <x-nav-link :href="route('home').'#features'">
                             {{ __('landing.nav_features') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.*')">
+                        <x-nav-link :href="route('pricing')" :active="request()->routeIs('pricing')">
                             {{ __('landing.nav_pricing') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('track.index')" :active="request()->routeIs('track.*')">
+                            {{ __('landing.nav_track') }}
                         </x-nav-link>
                         <x-nav-link :href="route('privacy')" :active="request()->routeIs('privacy')">
                             {{ __('landing.nav_privacy') }}
@@ -61,8 +67,9 @@
                                 </x-dropdown-link>
                             @endif
                             <x-dropdown-link :href="route('dashboard')">{{ __('common.dashboard') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('orders.index')">{{ __('shop.orders') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('billing.index')">{{ __('billing.billing') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('profile.edit')">{{ __('common.profile') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('profile.edit')">{{ __('common.store_settings') }}</x-dropdown-link>
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -95,11 +102,13 @@
         <div class="space-y-1 px-3 pb-3 pt-2">
             @auth
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('common.dashboard') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">{{ __('shop.orders') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">{{ __('billing.billing') }}</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('plans.index')">{{ __('landing.nav_pricing') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('pricing')">{{ __('landing.nav_pricing') }}</x-responsive-nav-link>
             @else
                 <x-responsive-nav-link :href="route('home').'#features'">{{ __('landing.nav_features') }}</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('plans.index')">{{ __('landing.nav_pricing') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('pricing')">{{ __('landing.nav_pricing') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('track.index')">{{ __('landing.nav_track') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('privacy')">{{ __('landing.nav_privacy') }}</x-responsive-nav-link>
             @endauth
         </div>
@@ -114,7 +123,7 @@
                 @if (Auth::user()->isAdmin())
                     <x-responsive-nav-link :href="route('admin.dashboard')">{{ __('common.admin_panel') }}</x-responsive-nav-link>
                 @endif
-                <x-responsive-nav-link :href="route('profile.edit')">{{ __('common.profile') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('profile.edit')">{{ __('common.store_settings') }}</x-responsive-nav-link>
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -17,6 +17,9 @@ class UserFactory extends Factory
 
     public function definition(): array
     {
+        $storeName = fake()->randomElement(['متجر', 'ركن', 'بوتيك', 'محل']).' '
+            .fake()->randomElement(['النخبة', 'الأصالة', 'اللمسة', 'الريّان', 'الوفاء', 'السعادة', 'الأناقة']);
+
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -25,6 +28,9 @@ class UserFactory extends Factory
             'role' => UserRole::User,
             'phone' => '9'.fake()->numerify('#######'),
             'is_active' => true,
+            'store_name' => $storeName,
+            'intake_slug' => 'store-'.fake()->unique()->numerify('####'),
+            'whatsapp' => '9'.fake()->numerify('#######'),
             'remember_token' => Str::random(10),
         ];
     }

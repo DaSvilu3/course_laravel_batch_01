@@ -13,6 +13,11 @@ return [
     'register' => 'Register',
     'logout' => 'Log out',
     'profile' => 'Profile',
+    'orders' => 'Orders',
+    'track_order' => 'Track order',
+    'store_settings' => 'Store settings',
+    'copy' => 'Copy',
+    'copied' => 'Copied',
 
     'save' => 'Save',
     'cancel' => 'Cancel',

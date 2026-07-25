@@ -26,6 +26,15 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'store_name' => ['required', 'string', 'max:255'],
+            'whatsapp' => ['nullable', 'string', 'max:32'],
+            'intake_slug' => [
+                'required',
+                'string',
+                'max:255',
+                'alpha_dash',
+                Rule::unique(User::class, 'intake_slug')->ignore($this->user()->id),
+            ],
         ];
     }
 }

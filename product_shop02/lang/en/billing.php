@@ -4,13 +4,13 @@ return [
 
     'pricing' => 'Pricing',
     'plans' => 'Plans',
-    'choose_plan' => 'Choose the plan that fits you',
-    'pricing_subtitle' => 'Upgrade, downgrade or cancel any time.',
+    'choose_plan' => 'Choose the plan that fits your store',
+    'pricing_subtitle' => 'Upgrade or cancel any time.',
     'free' => 'Free',
     'per_month' => '/ month',
     'per_year' => '/ year',
     'trial_days' => ':days-day free trial',
-    'featured' => 'Most popular',
+    'featured' => 'Best for stores',
     'current_plan' => 'Your current plan',
     'subscribe' => 'Subscribe',
     'get_started' => 'Get started',
@@ -18,8 +18,8 @@ return [
 
     'billing' => 'Billing',
     'my_subscription' => 'My subscription',
-    'no_subscription' => 'You have no active subscription.',
-    'no_subscription_hint' => 'Pick a plan to unlock the subscriber features.',
+    'no_subscription' => 'You are on the free plan.',
+    'no_subscription_hint' => 'Upgrade to Qaid Pro to receive more orders each month.',
     'view_plans' => 'View plans',
     'status' => 'Status',
     'renews_on' => 'Renews on',
@@ -37,27 +37,30 @@ return [
     'started' => 'Started',
     'features' => 'Features',
 
-    'subscribed' => 'You are subscribed. Welcome aboard!',
+    'subscribed' => 'You are subscribed. Welcome to Qaid Pro!',
     'canceled_notice' => 'Your subscription is cancelled and will not renew.',
     'subscription_required' => 'This area needs an active subscription.',
 
-    // Dashboard
+    // ---- Plan feature bullets (from quota) ---------------------------
+    'orders_limit_day' => 'Up to :count orders per day',
+    'orders_limit_month' => 'Up to :count orders per month',
+    'orders_unlimited' => 'Unlimited orders',
+    'tracker_included' => 'A tracker code for every order',
+    'intake_link_included' => 'Your own order intake link',
+    'support_email' => 'Email support',
+    'support_priority' => 'Priority support',
+
+    // ---- Dashboard ---------------------------------------------------
     'plan_includes' => 'Your plan includes',
     'unlimited' => 'Unlimited',
-    'projects' => 'projects',
-    'api_access' => 'API access',
-    'support' => 'support',
-    'manage_billing' => 'Manage billing',
+    'manage_billing' => 'Manage subscription',
     'upgrade' => 'Upgrade plan',
     'recent_invoices' => 'Recent invoices',
     'no_invoices' => 'No payments yet.',
     'total_paid' => 'Total paid',
     'reference' => 'Reference',
     'active_since' => 'Member since',
-    'complete_profile' => 'Complete your profile',
-    'complete_profile_hint' => 'Add your details to get the most out of your account.',
 
-    // Subscriber-only demo page.
     'members_title' => 'Subscribers area',
     'members_body' => 'This page is protected by the "subscribed" middleware. Only users with an active plan (and admins) can see it.',
 ];

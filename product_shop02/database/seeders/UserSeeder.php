@@ -24,20 +24,20 @@ class UserSeeder extends Seeder
             ],
         );
 
+        // The primary demo merchant — a phone shop, fully set up.
         User::updateOrCreate(
             ['email' => 'user@example.com'],
             [
-                'name' => 'عميل تجريبي',
+                'name' => 'يوسف الكندي',
                 'password' => Hash::make('password'),
                 'role' => UserRole::User,
-                'phone' => '91111111',
+                'phone' => '91234567',
                 'is_active' => true,
+                'store_name' => 'متجر النخبة للهواتف',
+                'intake_slug' => 'elite-phones',
+                'whatsapp' => '91234567',
                 'email_verified_at' => now(),
             ],
         );
-
-        if (app()->environment('local') && User::count() < 12) {
-            User::factory(10)->create();
-        }
     }
 }

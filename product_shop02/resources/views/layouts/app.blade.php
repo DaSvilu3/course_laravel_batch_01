@@ -63,7 +63,8 @@
                             <h3 class="text-xs font-semibold uppercase tracking-wider text-ink-400 dark:text-ink-500">{{ __('landing.footer_product') }}</h3>
                             <ul class="mt-4 space-y-3 text-sm">
                                 <li><a href="{{ route('home').'#features' }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_features') }}</a></li>
-                                <li><a href="{{ route('plans.index') }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_pricing') }}</a></li>
+                                <li><a href="{{ route('pricing') }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_pricing') }}</a></li>
+                                <li><a href="{{ route('track.index') }}" class="text-ink-600 hover:text-brand-600 dark:text-ink-300 dark:hover:text-brand-400">{{ __('landing.nav_track') }}</a></li>
                             </ul>
                         </div>
                         <div>

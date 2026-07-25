@@ -66,15 +66,24 @@
             <h2 class="text-lg font-semibold text-ink-900 dark:text-white">
                 {{ $subscription ? __('billing.change_plan') : __('billing.plans') }}
             </h2>
-            <a href="{{ route('plans.index') }}" class="text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400">{{ __('billing.view_plans') }}</a>
+            <a href="{{ route('pricing') }}" class="text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400">{{ __('billing.view_plans') }}</a>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-3">
             @foreach ($plans as $plan)
                 <div class="card flex flex-col p-4">
-                    <span class="font-semibold text-ink-900 dark:text-white">{{ $plan->name }}</span>
+                    <span class="font-semibold text-ink-900 dark:text-white">{{ $plan->translate('name') }}</span>
                     <span class="mt-1 text-lg font-bold text-brand-600 dark:text-brand-400">{{ $plan->formattedPrice() }}</span>
                     <span class="text-xs text-ink-500 dark:text-ink-400">{{ $plan->interval->label() }}</span>
+
+                    <ul class="mt-3 space-y-1.5 text-xs text-ink-600 dark:text-ink-300">
+                        @foreach ($plan->featureLines() as $line)
+                            <li class="flex items-start gap-1.5">
+                                <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <span>{{ $line }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
 
                     <form method="POST" action="{{ route('billing.subscribe', $plan) }}" class="mt-auto pt-4">
                         @csrf

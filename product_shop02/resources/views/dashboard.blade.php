@@ -1,168 +1,121 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h1 class="text-2xl font-bold tracking-tight text-ink-900 dark:text-white">
-            {{ __('common.welcome_back', ['name' => Auth::user()->name]) }}
-        </h1>
-        <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">{{ __('common.dashboard') }}</p>
-    </x-slot>
+    <x-slot name="title">{{ __('common.dashboard') }}</x-slot>
 
-    @if ($subscription)
-        {{-- ---- Subscribed: plan overview -------------------------------- --}}
-        <div class="grid gap-6 lg:grid-cols-3">
-            {{-- Current plan --}}
-            <div class="card relative overflow-hidden p-6 lg:col-span-2">
-                <div aria-hidden="true" class="pointer-events-none absolute -end-16 -top-16 h-48 w-48 rounded-full bg-brand-500/10 blur-3xl"></div>
+    @php($user = auth()->user())
+    @php($limit = $quota->limit($user))
+    @php($used = $quota->used($user))
 
-                <div class="relative flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                        <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('billing.my_subscription') }}</p>
-                        <div class="mt-1 flex items-center gap-3">
-                            <h2 class="text-2xl font-bold text-ink-900 dark:text-white">{{ $subscription->plan_name }}</h2>
-                            <x-status-badge :status="$subscription->status" />
-                        </div>
-                        <p class="mt-1 text-ink-600 dark:text-ink-300">
-                            <span class="text-lg font-bold text-ink-900 dark:text-white">{{ $subscription->formattedPrice() }}</span>
-                            <span class="text-sm text-ink-500 dark:text-ink-400">{{ $subscription->interval->label() }}</span>
-                        </p>
-                    </div>
+    {{-- Header --}}
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-black tracking-tight text-ink-900 dark:text-white">
+                {{ $user->store_name ?: $user->name }}
+            </h1>
+            <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">{{ __('common.welcome_back', ['name' => $user->name]) }}</p>
+        </div>
+        <a href="{{ route('orders.create') }}" class="btn-primary px-5 py-2.5">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" /></svg>
+            {{ __('shop.new_order') }}
+        </a>
+    </div>
 
-                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-glow">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.09 4.26L19 8l-3.5 3.4.8 4.8L12 14l-4.3 2.2.8-4.8L5 8l4.91-.74L12 3z" />
-                        </svg>
+    {{-- Intake link card --}}
+    <div x-data="{ copied: false, copy(v) { navigator.clipboard.writeText(v); this.copied = true; setTimeout(() => this.copied = false, 1500); } }"
+         class="card mt-6 overflow-hidden">
+        <div class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 010 5.656l-3 3a4 4 0 01-5.656-5.656l1.5-1.5M10.172 13.828a4 4 0 010-5.656l3-3a4 4 0 015.656 5.656l-1.5 1.5" /></svg>
                     </span>
+                    <h2 class="font-bold text-ink-900 dark:text-white">{{ __('shop.intake_link') }}</h2>
                 </div>
-
-                {{-- term / renewal line --}}
-                <div class="relative mt-5 rounded-xl border border-ink-200/70 bg-ink-50/60 px-4 py-3 text-sm dark:border-ink-800 dark:bg-ink-950/40">
-                    @if ($subscription->onGracePeriod())
-                        <p class="flex items-center gap-2 text-amber-700 dark:text-amber-300">
-                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-                            {{ __('billing.wont_renew') }}
-                            <span class="font-semibold">{{ $subscription->ends_at?->isoFormat('LL') }}</span>
-                        </p>
-                    @elseif ($subscription->onTrial())
-                        <p class="flex items-center gap-2 text-ink-600 dark:text-ink-300">
-                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
-                            {{ __('billing.trial_until') }}:
-                            <span class="font-semibold text-ink-900 dark:text-white">{{ $subscription->trial_ends_at?->isoFormat('LL') }}</span>
-                        </p>
-                    @else
-                        <p class="flex items-center gap-2 text-ink-600 dark:text-ink-300">
-                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                            {{ __('billing.renews_on') }}:
-                            <span class="font-semibold text-ink-900 dark:text-white">{{ $subscription->ends_at?->isoFormat('LL') }}</span>
-                        </p>
-                    @endif
-                </div>
-
-                <div class="relative mt-5 flex flex-wrap gap-3">
-                    <a href="{{ route('billing.index') }}" class="btn-primary">{{ __('billing.manage_billing') }}</a>
-                    <a href="{{ route('plans.index') }}" class="btn-secondary">{{ __('billing.upgrade') }}</a>
-                </div>
+                <p class="mt-2 truncate text-sm text-brand-600 dark:text-brand-400" dir="ltr">{{ $user->intakeUrl() }}</p>
+                <p class="mt-1 text-xs text-ink-500 dark:text-ink-400">{{ __('shop.intake_link_hint') }}</p>
             </div>
-
-            {{-- What the plan includes --}}
-            <div class="card p-6">
-                <h2 class="text-sm font-semibold text-ink-500 dark:text-ink-400">{{ __('billing.plan_includes') }}</h2>
-                <ul class="mt-4 space-y-3 text-sm">
-                    @php
-                        $projects = $plan?->feature('max_projects', 0);
-                        $projectsLabel = ($projects === -1) ? __('billing.unlimited') : $projects;
-                    @endphp
-                    <li class="flex items-center gap-3">
-                        <x-dashboard-check :on="true" />
-                        <span class="text-ink-700 dark:text-ink-200">{{ $projectsLabel }} {{ __('billing.projects') }}</span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <x-dashboard-check :on="(bool) $plan?->feature('api_access', false)" />
-                        <span class="text-ink-700 dark:text-ink-200">{{ __('billing.api_access') }}</span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <x-dashboard-check :on="true" />
-                        <span class="text-ink-700 dark:text-ink-200 capitalize">{{ $plan?->feature('support', 'community') }} {{ __('billing.support') }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    @else
-        {{-- ---- Not subscribed: upsell ---------------------------------- --}}
-        <div class="card relative overflow-hidden p-10 text-center">
-            <div aria-hidden="true" class="pointer-events-none absolute inset-0">
-                <div class="absolute -top-24 start-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-brand-500/15 blur-3xl"></div>
-            </div>
-            <div class="relative">
-                <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-glow">
-                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.09 4.26L19 8l-3.5 3.4.8 4.8L12 14l-4.3 2.2.8-4.8L5 8l4.91-.74L12 3z" />
-                    </svg>
-                </span>
-                <h2 class="mt-5 text-xl font-bold text-ink-900 dark:text-white">{{ __('billing.no_subscription') }}</h2>
-                <p class="mx-auto mt-2 max-w-md text-ink-500 dark:text-ink-400">{{ __('billing.no_subscription_hint') }}</p>
-                <a href="{{ route('plans.index') }}" class="btn-primary mt-6">{{ __('billing.view_plans') }}</a>
-            </div>
-        </div>
-    @endif
-
-    {{-- ---- Stat tiles ---------------------------------------------------- --}}
-    <div class="mt-6 grid gap-4 sm:grid-cols-3">
-        <div class="card p-5">
-            <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('billing.total_paid') }}</p>
-                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m4-14H9.5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5H8" /></svg>
-                </span>
-            </div>
-            <p class="mt-3 text-3xl font-black text-ink-900 dark:text-white">{{ App\Support\Money::format($totalPaid) }}</p>
-        </div>
-
-        <div class="card p-5">
-            <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('billing.status') }}</p>
-                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.5l2 2 4-4.5M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18Z" /></svg>
-                </span>
-            </div>
-            <p class="mt-3 text-lg font-bold text-ink-900 dark:text-white">
-                @if ($subscription)
-                    {{ $subscription->status->label() }}
-                @else
-                    {{ __('common.none') }}
+            <div class="flex shrink-0 items-center gap-2">
+                <button type="button" @click="copy('{{ $user->intakeUrl() }}')" class="btn-secondary px-4 py-2 text-sm">
+                    <span x-show="!copied">{{ __('shop.copy_link') }}</span>
+                    <span x-show="copied" x-cloak class="text-emerald-600 dark:text-emerald-400">{{ __('shop.copied') }}</span>
+                </button>
+                @if ($user->whatsapp)
+                    <a href="https://wa.me/?text={{ urlencode($user->store_name.' — '.$user->intakeUrl()) }}" target="_blank" rel="noopener"
+                       class="btn-secondary px-4 py-2 text-sm">{{ __('shop.share_whatsapp') }}</a>
                 @endif
-            </p>
-        </div>
-
-        <div class="card p-5">
-            <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('billing.active_since') }}</p>
-                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /></svg>
-                </span>
+                <a href="{{ $user->intakeUrl() }}" target="_blank" rel="noopener" class="btn-ghost px-3 py-2 text-sm">{{ __('shop.open_link') }}</a>
             </div>
-            <p class="mt-3 text-lg font-bold text-ink-900 dark:text-white">{{ Auth::user()->created_at?->isoFormat('MMM YYYY') }}</p>
         </div>
     </div>
 
-    {{-- ---- Recent invoices ---------------------------------------------- --}}
-    <div class="card mt-6 overflow-hidden">
-        <div class="flex items-center justify-between border-b border-ink-100 px-6 py-4 dark:border-ink-800">
-            <h2 class="text-lg font-semibold text-ink-900 dark:text-white">{{ __('billing.recent_invoices') }}</h2>
-            <a href="{{ route('billing.index') }}" class="text-sm font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">{{ __('billing.billing') }}</a>
+    {{-- KPI cards --}}
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        @foreach ([
+            ['label' => __('shop.quota_period_day'), 'value' => $todayCount],
+            ['label' => __('shop.quota_period_month'), 'value' => $monthCount],
+            ['label' => __('shop.all_orders'), 'value' => $totalCount],
+            ['label' => __('enums.order_status.in_progress'), 'value' => $openCount],
+        ] as $c)
+            <div class="card p-5">
+                <p class="text-xs font-medium uppercase tracking-wide text-ink-500 dark:text-ink-400">{{ $c['label'] }}</p>
+                <p class="mt-2 text-3xl font-black text-ink-900 dark:text-white">{{ number_format($c['value']) }}</p>
+            </div>
+        @endforeach
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        {{-- Quota / plan --}}
+        <div class="card p-6">
+            <div class="flex items-center justify-between">
+                <h2 class="font-bold text-ink-900 dark:text-white">{{ __('shop.quota') }}</h2>
+                <span class="badge bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">{{ $plan?->translate('name') }}</span>
+            </div>
+
+            @if ($limit === null)
+                <p class="mt-6 text-2xl font-black text-ink-900 dark:text-white">{{ __('shop.quota_unlimited') }}</p>
+                <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">{{ number_format($used) }}</p>
+            @else
+                <div class="mt-6 flex items-baseline gap-1">
+                    <span class="text-3xl font-black text-ink-900 dark:text-white">{{ number_format($used) }}</span>
+                    <span class="text-sm text-ink-500 dark:text-ink-400">/ {{ number_format($limit) }} · {{ $quota->period($user) === 'day' ? __('shop.quota_period_day') : __('shop.quota_period_month') }}</span>
+                </div>
+                <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
+                    <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-violet-500" style="width: {{ $quota->usagePercent($user) }}%"></div>
+                </div>
+                <p class="mt-2 text-xs text-ink-500 dark:text-ink-400">{{ __('shop.quota_remaining', ['count' => number_format(max(0, $limit - $used))]) }}</p>
+            @endif
+
+            @unless ($subscription)
+                <a href="{{ route('pricing') }}" class="btn-primary mt-5 w-full justify-center py-2.5 text-sm">{{ __('billing.upgrade') }}</a>
+            @else
+                <a href="{{ route('billing.index') }}" class="btn-secondary mt-5 w-full justify-center py-2.5 text-sm">{{ __('billing.manage_billing') }}</a>
+            @endunless
         </div>
 
-        @forelse ($payments as $payment)
-            <div class="flex items-center justify-between border-b border-ink-100 px-6 py-3 last:border-0 dark:border-ink-800">
-                <div>
-                    <p class="font-mono text-sm text-ink-800 dark:text-ink-200">{{ $payment->reference() }}</p>
-                    <p class="text-xs text-ink-500 dark:text-ink-400">{{ $payment->created_at?->isoFormat('LL') }}</p>
-                </div>
-                <div class="flex items-center gap-3 text-sm">
-                    <span class="font-semibold text-ink-900 dark:text-white">{{ $payment->formattedAmount() }}</span>
-                    <span class="badge {{ $payment->status->color() }}">{{ $payment->status->label() }}</span>
-                </div>
+        {{-- Recent orders --}}
+        <div class="card overflow-hidden lg:col-span-2">
+            <div class="flex items-center justify-between border-b border-ink-200/70 px-6 py-4 dark:border-ink-800/70">
+                <h2 class="font-bold text-ink-900 dark:text-white">{{ __('admin.recent_orders') }}</h2>
+                <a href="{{ route('orders.index') }}" class="text-sm font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">{{ __('shop.all_orders') }}</a>
             </div>
-        @empty
-            <p class="px-6 py-8 text-center text-sm text-ink-500 dark:text-ink-400">{{ __('billing.no_invoices') }}</p>
-        @endforelse
+
+            @if ($recentOrders->isEmpty())
+                <p class="px-6 py-10 text-center text-sm text-ink-500 dark:text-ink-400">{{ __('shop.no_orders') }}</p>
+            @else
+                <div class="divide-y divide-ink-200/70 dark:divide-ink-800/70">
+                    @foreach ($recentOrders as $order)
+                        <a href="{{ route('orders.show', $order) }}" class="flex items-center justify-between gap-4 px-6 py-3.5 transition hover:bg-ink-50 dark:hover:bg-ink-800/40">
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-semibold text-ink-900 dark:text-white">{{ $order->customer_name }}</p>
+                                <p class="truncate text-xs text-ink-500 dark:text-ink-400">{{ $order->tracker_code }} · {{ $order->item_description }}</p>
+                            </div>
+                            <div class="flex shrink-0 items-center gap-3">
+                                <span class="hidden text-sm font-medium text-ink-600 sm:inline dark:text-ink-300">{{ $order->formattedPrice() }}</span>
+                                <x-status-badge :status="$order->status" />
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+        </div>
     </div>
 </x-app-layout>

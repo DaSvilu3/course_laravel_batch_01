@@ -39,6 +39,7 @@ return new class extends Migration
             // Delivery.
             $table->string('country', 2)->default('OM');
             $table->string('governorate')->nullable();
+            $table->string('wilayat')->nullable();
             $table->text('address')->nullable();
             $table->string('location_note')->nullable();
 

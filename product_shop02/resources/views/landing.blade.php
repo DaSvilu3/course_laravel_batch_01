@@ -33,7 +33,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
                     </svg>
                 </a>
-                <a href="#pricing" class="btn-secondary px-6 py-3 text-base">
+                <a href="{{ route('track.index') }}" class="btn-secondary px-6 py-3 text-base">
                     {{ __('landing.hero_cta_secondary') }}
                 </a>
             </div>
@@ -99,12 +99,10 @@
     {{-- ================================================================= --}}
     <section class="mt-16 text-center">
         <p class="text-sm font-medium text-ink-500 dark:text-ink-400">{{ __('landing.trusted_by') }}</p>
-        <div class="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-ink-400 dark:text-ink-600">
-            <span class="text-xl font-black tracking-tight">Northwind</span>
-            <span class="text-xl font-extrabold italic tracking-tight">Lumen</span>
-            <span class="text-xl font-black uppercase tracking-widest">Atlas</span>
-            <span class="text-xl font-bold tracking-tight">Quantic</span>
-            <span class="text-xl font-black tracking-tight">Vertex</span>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-3">
+            @foreach (['audience_phones', 'audience_abayas', 'audience_freelancers', 'audience_direct', 'audience_home'] as $aud)
+                <span class="badge bg-white px-4 py-1.5 text-sm text-ink-600 dark:bg-ink-900 dark:text-ink-300">{{ __('landing.'.$aud) }}</span>
+            @endforeach
         </div>
     </section>
 
@@ -199,7 +197,7 @@
                     @endif
 
                     <h3 class="text-lg font-bold text-ink-900 dark:text-white">{{ $plan->translate('name') }}</h3>
-                    <p class="mt-2 min-h-[2.5rem] text-sm leading-relaxed text-ink-500 dark:text-ink-400">{{ $plan->description }}</p>
+                    <p class="mt-2 min-h-[2.5rem] text-sm leading-relaxed text-ink-500 dark:text-ink-400">{{ $plan->translate('description') }}</p>
 
                     <div class="mt-6 flex items-baseline gap-1">
                         <span class="text-4xl font-black tracking-tight text-ink-900 dark:text-white">{{ $plan->formattedPrice() }}</span>
@@ -213,23 +211,12 @@
                     @endif
 
                     <ul class="mt-6 space-y-3 text-sm">
-                        @php $maxProjects = $plan->feature('max_projects'); @endphp
-                        <li class="flex items-start gap-2.5 text-ink-700 dark:text-ink-200">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            <span>{{ $maxProjects === -1 ? 'Unlimited projects' : $maxProjects . ' projects' }}</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 {{ $plan->feature('api_access') ? 'text-ink-700 dark:text-ink-200' : 'text-ink-400 dark:text-ink-500' }}">
-                            @if ($plan->feature('api_access'))
+                        @foreach ($plan->featureLines() as $line)
+                            <li class="flex items-start gap-2.5 text-ink-700 dark:text-ink-200">
                                 <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            @else
-                                <svg class="mt-0.5 h-4 w-4 shrink-0 text-ink-300 dark:text-ink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" /></svg>
-                            @endif
-                            <span>API access</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-ink-700 dark:text-ink-200">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            <span class="capitalize">{{ $plan->feature('support') }} support</span>
-                        </li>
+                                <span>{{ $line }}</span>
+                            </li>
+                        @endforeach
                     </ul>
 
                     <a href="{{ route('register') }}" class="{{ $plan->is_featured ? 'btn-primary' : 'btn-secondary' }} mt-8 w-full py-3">
@@ -240,7 +227,7 @@
         </div>
 
         <div class="mt-10 text-center">
-            <a href="{{ route('plans.index') }}" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">
+            <a href="{{ route('pricing') }}" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">
                 {{ __('landing.pricing_cta') }}
                 <svg class="h-4 w-4 rtl-flip transition group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
             </a>

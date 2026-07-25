@@ -6,6 +6,7 @@ use App\Enums\BillingInterval;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Models\User;
@@ -28,6 +29,8 @@ class DashboardController extends Controller
                 'active' => Subscription::active()->count(),
                 'trialing' => Subscription::where('status', SubscriptionStatus::Trialing->value)->count(),
                 'customers' => User::where('role', 'user')->count(),
+                'orders' => Order::count(),
+                'orders_today' => Order::whereDate('created_at', today())->count(),
             ],
             'planBreakdown' => Subscription::active()
                 ->selectRaw('plan_name, count(*) as subscribers, sum(price) as revenue')

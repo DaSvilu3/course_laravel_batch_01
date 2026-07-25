@@ -71,6 +71,34 @@ class Plan extends Model
         return (int) $this->feature($key, 0) === -1;
     }
 
+    /**
+     * Localized feature bullet lines for the pricing / billing cards, derived
+     * from the order quota stored in `features`.
+     */
+    public function featureLines(): array
+    {
+        $limit = $this->feature('orders_limit');
+        $period = $this->feature('orders_period', 'month');
+
+        if ($limit === null || (int) $limit === -1) {
+            $orders = __('billing.orders_unlimited');
+        } else {
+            $orders = __('billing.orders_limit_'.$period, ['count' => number_format((int) $limit)]);
+        }
+
+        $lines = [
+            $orders,
+            __('billing.tracker_included'),
+            __('billing.intake_link_included'),
+        ];
+
+        if ($support = $this->feature('support')) {
+            $lines[] = __('billing.support_'.$support);
+        }
+
+        return $lines;
+    }
+
     // ---------------------------------------------------------------- helpers
 
     public function formattedPrice(): string

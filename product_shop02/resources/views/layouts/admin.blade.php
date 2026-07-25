@@ -2,13 +2,9 @@
     $nav = [
         ['route' => 'admin.dashboard', 'pattern' => 'admin.dashboard', 'label' => __('admin.dashboard')],
         ['route' => 'admin.orders.index', 'pattern' => 'admin.orders.*', 'label' => __('admin.orders')],
-        ['route' => 'admin.payments.index', 'pattern' => 'admin.payments.*', 'label' => __('admin.payments')],
         ['route' => 'admin.subscriptions.index', 'pattern' => 'admin.subscriptions.*', 'label' => __('admin.subscriptions')],
         ['route' => 'admin.plans.index', 'pattern' => 'admin.plans.*', 'label' => __('admin.plans')],
-        ['route' => 'admin.bookings.index', 'pattern' => 'admin.bookings.*', 'label' => __('admin.bookings')],
-        ['route' => 'admin.services.index', 'pattern' => 'admin.services.*', 'label' => __('admin.services')],
-        ['route' => 'admin.products.index', 'pattern' => 'admin.products.*', 'label' => __('admin.products')],
-        ['route' => 'admin.categories.index', 'pattern' => 'admin.categories.*', 'label' => __('admin.categories')],
+        ['route' => 'admin.payments.index', 'pattern' => 'admin.payments.*', 'label' => __('admin.payments')],
         ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => __('admin.users')],
     ];
 @endphp

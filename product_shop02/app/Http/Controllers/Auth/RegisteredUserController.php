@@ -32,15 +32,22 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'store_name' => ['required', 'string', 'max:255'],
+            'whatsapp' => ['nullable', 'string', 'max:32'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'store_name' => $request->store_name,
+            'whatsapp' => $request->whatsapp,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // Give the merchant a public intake link straight away.
+        $user->update(['intake_slug' => $user->generateIntakeSlug()]);
 
         event(new Registered($user));
 

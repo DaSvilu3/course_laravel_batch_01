@@ -1,11 +1,11 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-ink-900 dark:text-white">
-            {{ __('Profile Information') }}
+            {{ __('common.store_settings') }}
         </h2>
 
         <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">
-            {{ __("Update your account's profile information and email address.") }}
+            {{ __('shop.intake_link_hint') }}
         </p>
     </header>
 
@@ -18,13 +18,34 @@
         @method('patch')
 
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <x-input-label for="store_name" :value="__('landing.store_name')" />
+            <x-text-input id="store_name" name="store_name" type="text" class="mt-1 block w-full" :value="old('store_name', $user->store_name)" required autofocus />
+            <x-input-error class="mt-2" :messages="$errors->get('store_name')" />
+        </div>
+
+        <div>
+            <x-input-label for="intake_slug" :value="__('shop.intake_link')" />
+            <div class="mt-1 flex items-center gap-2">
+                <span class="text-xs text-ink-400 dark:text-ink-500" dir="ltr">{{ url('/o') }}/</span>
+                <x-text-input id="intake_slug" name="intake_slug" type="text" class="block w-full" :value="old('intake_slug', $user->intake_slug)" required dir="ltr" />
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('intake_slug')" />
+        </div>
+
+        <div>
+            <x-input-label for="whatsapp" :value="__('landing.whatsapp')" />
+            <x-text-input id="whatsapp" name="whatsapp" type="tel" class="mt-1 block w-full" :value="old('whatsapp', $user->whatsapp)" dir="ltr" placeholder="9XXXXXXX" />
+            <x-input-error class="mt-2" :messages="$errors->get('whatsapp')" />
+        </div>
+
+        <div>
+            <x-input-label for="name" :value="__('landing.your_name')" />
+            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('admin.email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 

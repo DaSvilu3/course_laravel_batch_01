@@ -16,32 +16,29 @@ class OrderController extends Controller
     {
         $orders = Order::query()
             ->with('user')
-            ->withCount('items')
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
-            ->when($request->filled('q'), function ($q) use ($request) {
-                $term = '%'.$request->string('q').'%';
-                $q->where(fn ($w) => $w->where('number', 'like', $term)
-                    ->orWhere('customer_name', 'like', $term)
-                    ->orWhere('customer_email', 'like', $term));
-            })
+            ->status($request->query('status'))
+            ->search($request->query('q'))
             ->latest()
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.orders.index', ['orders' => $orders]);
+        return view('admin.orders.index', [
+            'orders' => $orders,
+            'statusOptions' => OrderStatus::options(),
+        ]);
     }
 
     public function show(Order $order): View
     {
         return view('admin.orders.show', [
-            'order' => $order->load('items.purchasable', 'payments', 'user'),
+            'order' => $order->load('user'),
         ]);
     }
 
     public function update(Request $request, Order $order): RedirectResponse
     {
         $data = $request->validate([
-            'status' => ['required', Rule::in(array_column(OrderStatus::cases(), 'value'))],
+            'status' => ['required', Rule::enum(OrderStatus::class)],
         ]);
 
         $order->update(['status' => $data['status']]);

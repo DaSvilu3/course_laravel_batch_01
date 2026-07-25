@@ -4,22 +4,24 @@ return [
 
     'user_role' => [
         'admin' => 'مدير',
-        'user' => 'عميل',
-    ],
-
-    'catalog_type' => [
-        'service' => 'خدمة',
-        'product' => 'منتج',
+        'user' => 'تاجر',
     ],
 
     'order_status' => [
-        'pending' => 'قيد الانتظار',
-        'awaiting_payment' => 'بانتظار الدفع',
-        'paid' => 'مدفوع',
-        'processing' => 'قيد التنفيذ',
+        'new' => 'جديد',
+        'in_progress' => 'قيد العمل',
         'completed' => 'مكتمل',
         'cancelled' => 'ملغي',
-        'refunded' => 'مسترجع',
+    ],
+
+    'order_source' => [
+        'form' => 'نموذج',
+        'manual' => 'يدوي',
+    ],
+
+    'payment_method' => [
+        'cod' => 'نقدي عند الاستلام',
+        'transfer' => 'تحويل بنكي',
     ],
 
     'payment_status' => [
@@ -28,13 +30,6 @@ return [
         'failed' => 'فشل',
         'cancelled' => 'ملغي',
         'refunded' => 'مسترجع',
-    ],
-
-    'booking_status' => [
-        'pending' => 'قيد الانتظار',
-        'confirmed' => 'مؤكد',
-        'completed' => 'مكتمل',
-        'cancelled' => 'ملغي',
     ],
 
     'billing_interval' => [
